@@ -58,7 +58,10 @@ CrossValidation <- function(data,k,n_iterations=100,method = "NB", cost_f="GKL",
       tmp_cost
     }
     stopCluster(cl)
-    return(median(cost))
+    cv_results <- list()
+    cv_results$cost <- cost
+    cv_results$cost_k <- median(cost)
+    return(cv_results)
   } else{
     res_nb <- NMFPoisEM(M=data, N=k)
 
