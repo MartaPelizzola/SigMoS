@@ -55,7 +55,7 @@ CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,pat
 
   if(pp < 0.95){
     #### Poisson fit is not good. Ask if NB check should be done
-    x <- menu(c("Yes", "No"), title=paste0("The percentage of residual points within the expected variance lines is ", pp, " showing overdispersion. Do you want to apply the negative binomial model?"))
+    x <- menu(c("Yes", "No"), title=paste0("The percentage of residual points within the expected variance lines is ", round(pp,2), " showing overdispersion. Do you want to apply the negative binomial model?"))
     if (x==1){
       cores=detectCores()
       cl <- makeCluster(cores[1]-1)
@@ -68,7 +68,8 @@ CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,pat
       stopCluster(cl)
 
       k_nb <- k[which.min(cost_nb)]
-      res_nb <- NMFNBMM(data, k_nb)
+      alpha <- alphaEst(data,k,patient_specific)
+      res_nb <- NMFNBMM(data, k_nb,alpha = alpha)
 
       W_nb <- res_nb$E
       H_nb <- res_nb$P
@@ -81,9 +82,9 @@ CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,pat
       result$NegBin$residuals <- rsd_nb
 
       if (pp>=0.95){
-        print(paste0("The percentage of residual points within the expected variance lines is ", pp, " showing that the Negative Binomial model is appropriate for this data set."))
+        print(paste0("The percentage of residual points within the expected variance lines is ", round(pp,2), " showing that the Negative Binomial model is appropriate for this data set."))
       } else {
-        print(paste0("The percentage of residual points within the expected variance lines is ", pp, " showing overdispersion."))
+        print(paste0("The percentage of residual points within the expected variance lines is ", round(pp,2), " showing overdispersion."))
       }
       #### Return result Poisson and Negative Binomial
       return(result)
@@ -92,7 +93,7 @@ CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,pat
       return(result)
     }
   } else {
-    print(paste0("The percentage of residual points within the expected variance lines is ", pp, " showing that the Poisson model is appropriate for this data set."))
+    print(paste0("The percentage of residual points within the expected variance lines is ", round(pp,2), " showing that the Poisson model is appropriate for this data set."))
     #### Return result Poisson only (when the Poisson fit is good)
     return(result)
   }
