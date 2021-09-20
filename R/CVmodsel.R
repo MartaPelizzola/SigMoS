@@ -68,7 +68,7 @@ CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,pat
       stopCluster(cl)
 
       k_nb <- k[which.min(cost_nb)]
-      alpha <- alphaEst(data,k,patient_specific)
+      alpha <- alphaEst(data,k_nb,patient_specific)
       res_nb <- NMFNBMM(data, k_nb,alpha = alpha)
 
       W_nb <- res_nb$E
