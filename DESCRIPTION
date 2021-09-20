@@ -8,7 +8,7 @@ Description: Cross-validation and model selection for robust learning of mutatio
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-Imports: R (>= 3.3.1), SQUAREM, foreach, doParallel
+Imports: SQUAREM, foreach, doParallel
 NeedsCompilation: yes
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
