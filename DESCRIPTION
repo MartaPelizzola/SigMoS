@@ -1,0 +1,14 @@
+Package: SigModeling
+Type: Package
+Title: Procedure to analyse mutational counts data from cancer patients: model selection and model diagnostics
+Version: 0.1.0
+Author: Ragnhild Laursen, Marta Pelizzola
+Maintainer: Ragnhild Laursen, Marta Pelizzola
+Description: Cross-validation and model selection for robust learning of mutational signatures using negative binomial non-negative matrix factorization
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Imports: R (>= 3.3.1), SQUAREM, foreach, doParallel
+NeedsCompilation: yes
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
