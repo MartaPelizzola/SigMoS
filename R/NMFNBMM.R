@@ -30,7 +30,7 @@ NMFNBMM = function(M, N, alpha, tol = 1e-5, seed = sample(1:1000,1)){
   G <- dim(M)[2]
 
   if(!(length(alpha)==1 | length(alpha)==G)){
-    return("The overdispersion parameter 'alpha' should have length 1 or length equal to the number of patients.")
+    stop("The overdispersion parameter 'alpha' should have length 1 or length equal to the number of patients.")
   }
 
   div <- rep(0,length(seed)) # vector of different GKLD values
