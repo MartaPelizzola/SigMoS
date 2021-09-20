@@ -6,14 +6,14 @@
 #' @param data Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.
 #' @param k Number of signatures to be used in the cross-validation.
 #' @param n_iterations Number of iterations for cross-validation procedure. Default is 100.
-#' @param method Non-negative matrix factorization model: 'Poisson' or 'NB' can be used. Default is 'NB' corresponding to the Negative Binomial model.  
+#' @param method Non-negative matrix factorization model: 'Poisson' or 'NB' can be used. Default is 'NB' corresponding to the Negative Binomial model.
 #' @param cost_f Cost function to be used for the cross-validation error. Default is GKL (Generalized Kullback-Leibler). Alternatives are: Frobenius norm ("Frobenius") and Itakura-Saito divergence ("IS").
 #' @param size_train Size of the train set. Default is 0.9, i.e. 90% of the patients are used for training and 10% for testing in the cross-validation.
 #' @param patient_specific Logical. If TRUE patient-specific overdispersion is used in the Negative Binomial model.
 #' @param tol Threshold for convergence of the EM and MM algorithms for estimating mutational signatures. Default is 1e-5.
-#' 
 #'
-#' @return List of length two. 'cost' is a vector of length n_iterations where the cost for each iteration is stored. 
+#'
+#' @return List of length two. 'cost' is a vector of length n_iterations where the cost for each iteration is stored.
 #' cost_k is the median of the values in 'cost' and it is used for comparison to choose the best number of signatures for a given data set.
 #'
 #' @export
@@ -26,19 +26,19 @@ CrossValidation <- function(data,k,n_iterations=100,method = "NB", cost_f="GKL",
   if(method=="NB"){
     alpha <- alphaEst(data,k,patient_specific)
     res_nb <- NMFNBMM(M=data, N=k, alpha = alpha)
-    
+
     cores=detectCores()
-    cl <- makeCluster(cores[1]-1) 
+    cl <- makeCluster(cores[1]-1)
     registerDoParallel(cl)
-    
+
     cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM', 'SigModeling'), .export = ls(globalenv())) %dopar% {
       n <- ncol(data)
       train_set = sample(1:n, size_train*n)
       res_train <- NMFNBMM(M=data[,train_set], N=k, alpha = alpha)
       h_train <- res_train$P
-      
-      ord <- corr.signatures(h_train,res_nb$P)
-      
+
+      ord <- corrSignatures(h_train,res_nb$P)
+
       if (cost_f=="GKL"){
         tmp_cost <- gklDiv(as.vector(data[,-train_set]), as.vector(h_train %*% res_nb$E[ord,-train_set]))
       } else if (cost_f=="Frobenius"){
@@ -46,7 +46,7 @@ CrossValidation <- function(data,k,n_iterations=100,method = "NB", cost_f="GKL",
       } else if (cost_f=="IS"){
         a_div = as.vector(data[,-train_set])
         b_div = as.vector(h_train %*% res_nb$E[ord,-train_set])
-        
+
         zeros <- which(a_div>0)
         tmp_costIS <- b_div
         tmp_costIS[zeros] <- (a_div/b_div - log(a_div/b_div))[zeros]
@@ -61,19 +61,19 @@ CrossValidation <- function(data,k,n_iterations=100,method = "NB", cost_f="GKL",
     return(median(cost))
   } else{
     res_nb <- NMFPoisEM(M=data, N=k)
-    
+
     cores=detectCores()
-    cl <- makeCluster(cores[1]-1) 
+    cl <- makeCluster(cores[1]-1)
     registerDoParallel(cl)
-    
+
     cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM', 'SigModeling'), .export = ls(globalenv())) %dopar% {
       n <- ncol(data)
       train_set = sample(1:n, size_train*n)
       res_train <- NMFPoisEM(M=data[,train_set], N=k)
       h_train <- res_train$P
-      
-      ord <- corr.signatures(h_train,res_nb$P)
-      
+
+      ord <- corrSignatures(h_train,res_nb$P)
+
       if (cost_f=="GKL"){
         tmp_cost <- gklDiv(as.vector(data[,-train_set]), as.vector(h_train %*% res_nb$E[ord,-train_set]))
       } else if (cost_f=="Frobenius"){
@@ -81,7 +81,7 @@ CrossValidation <- function(data,k,n_iterations=100,method = "NB", cost_f="GKL",
       } else if (cost_f=="IS"){
         a_div = as.vector(data[,-train_set])
         b_div = as.vector(h_train %*% res_nb$E[ord,-train_set])
-        
+
         zeros <- which(a_div>0)
         tmp_costIS <- b_div
         tmp_costIS[zeros] <- (a_div/b_div - log(a_div/b_div))[zeros]
@@ -98,5 +98,5 @@ CrossValidation <- function(data,k,n_iterations=100,method = "NB", cost_f="GKL",
     cv_results$cost_k <- median(cost)
     return(cv_results)
   }
-  
+
 }
