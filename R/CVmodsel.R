@@ -63,7 +63,7 @@ CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,pat
       #### check Negative Binomial
       cost_nb <- foreach(i=k, .combine=c, .packages=c('SQUAREM', 'SigModeling', 'foreach', 'doParallel'), .export = ls(globalenv())) %dopar% {
         tmp_cost <- CrossValidation(data,i,n_iterations,method = "NB", cost_f,size_train,patient_specific,tol)
-        tmp_cost
+        tmp_cost$cost_k
       }
       stopCluster(cl)
 
