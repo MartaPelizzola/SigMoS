@@ -16,6 +16,16 @@
 #'
 
 NMFPoisEM = function(M,N, tol = 1e-5, seed = sample(1:1000,1)){
+  if (N!=round(N)){
+    return("The number of signatures must be an integer.")
+  }
+  if(is.null(M)){
+    return("The data set of the mutational counts is missing.")
+  }
+  if(is.null(N)){
+    return("A value for the number of signatures to be estimated is missing.")
+  }
+
   K <- dim(M)[1]  # mutations
   G <- dim(M)[2]  # patients
 
