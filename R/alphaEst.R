@@ -14,7 +14,7 @@
 #' @export
 #'
 #'
-alphaEst <- function(data, k, patient_specific = FALSE){
+alphaEst <- function(data, k=NULL, patient_specific = FALSE){
   if (k!=round(k)){
     stop("The number of signatures must be an integer.")
   }
@@ -23,6 +23,9 @@ alphaEst <- function(data, k, patient_specific = FALSE){
   }
   if(is.null(k)){
     stop("A value for the number of signatures to be estimated is missing.")
+  }
+  if(length(k)!=1){
+    stop("'k' has length larger than 1.")
   }
   res_p <- NMFPoisEM(data,k,tol = 1e-5,
                      seed = sample(100000,1))

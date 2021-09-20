@@ -18,7 +18,7 @@
 #'
 #' @export
 
-CrossValidation <- function(data,k,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5){
+CrossValidation <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5){
   if (k!=round(k)){
     stop("The number of signatures must be an integer.")
   }
@@ -27,6 +27,9 @@ CrossValidation <- function(data,k,n_iterations=100,method = "NB", cost_f="GKL",
   }
   if(is.null(k)){
     stop("A value for the number of signatures to be estimated is missing.")
+  }
+  if(length(k)!=1){
+    stop("'k' has length larger than 1. Cross-validation is performed for one value of the number of signatures 'k' at a time.")
   }
 
   if (!(method %in% c("NB", "Poisson"))){
