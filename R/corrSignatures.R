@@ -10,8 +10,8 @@
 
 
 corrSignatures <- function(H1, H2){
-  if (identical(dim(H1),dim(H2))){
-    return("The two signature matrices need to have the same dimensions")
+  if (all.equal(dim(H1),dim(H2))){
+    stop("The two signature matrices need to have the same dimensions")
   }
   cormat <- cor(H1,H2)
   nsig    <- ncol(H1)

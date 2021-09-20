@@ -21,11 +21,11 @@
 
 CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5){
   if(is.null(data)){
-    return("The data set of the mutational counts is missing.")
+    stop("The data set of the mutational counts is missing.")
   }
 
-  if(!identical(k,round(k))){
-    return("The values for the number of signatures to be tested must be integers.")
+  if(!all.equal(k,round(k))){
+    stop("The values for the number of signatures to be tested must be integers.")
   }
   cores=detectCores()
   cl <- makeCluster(cores[1]-1)

@@ -20,13 +20,13 @@
 
 CrossValidation <- function(data,k,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5){
   if (k!=round(k)){
-    return("The number of signatures must be an integer.")
+    stop("The number of signatures must be an integer.")
   }
   if(is.null(data)){
-    return("The data set of the mutational counts is missing.")
+    stop("The data set of the mutational counts is missing.")
   }
   if(is.null(k)){
-    return("A value for the number of signatures to be estimated is missing.")
+    stop("A value for the number of signatures to be estimated is missing.")
   }
 
   if (!(method %in% c("NB", "Poisson"))){

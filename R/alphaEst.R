@@ -16,13 +16,13 @@
 #'
 alphaEst <- function(data, k, patient_specific = FALSE){
   if (k!=round(k)){
-    return("The number of signatures must be an integer.")
+    stop("The number of signatures must be an integer.")
   }
   if(is.null(data)){
-    return("The data set of the mutational counts is missing.")
+    stop("The data set of the mutational counts is missing.")
   }
   if(is.null(k)){
-    return("A value for the number of signatures to be estimated is missing.")
+    stop("A value for the number of signatures to be estimated is missing.")
   }
   res_p <- NMFPoisEM(data,k,tol = 1e-5,
                      seed = sample(100000,1))
