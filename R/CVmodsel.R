@@ -27,12 +27,13 @@ CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,pat
   if(!all.equal(k,round(k))){
     stop("The values for the number of signatures to be tested must be integers.")
   }
+
   cores=detectCores()
   cl <- makeCluster(cores[1]-1)
   registerDoParallel(cl)
 
   #### check Poisson
-  cost <- foreach(i=k, .combine=c, .packages='SQUAREM', .export = ls(globalenv())) %dopar% {
+  cost <- foreach(i=k, .combine=c, .packages=c('SQUAREM', 'SigModeling', 'foreach', 'doParallel'), .export = ls(globalenv())) %dopar% {
     tmp_cost <- CrossValidation(data,i,n_iterations,method = "Poisson", cost_f,size_train,patient_specific,tol)
     tmp_cost$cost_k
   }
@@ -60,7 +61,7 @@ CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,pat
       cl <- makeCluster(cores[1]-1)
       registerDoParallel(cl)
       #### check Negative Binomial
-      cost_nb <- foreach(i=k, .combine=c, .packages='SQUAREM', .export = ls(globalenv())) %dopar% {
+      cost_nb <- foreach(i=k, .combine=c, .packages=c('SQUAREM', 'SigModeling', 'foreach', 'doParallel'), .export = ls(globalenv())) %dopar% {
         tmp_cost <- CrossValidation(data,i,n_iterations,method = "NB", cost_f,size_train,patient_specific,tol)
         tmp_cost
       }
