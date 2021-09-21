@@ -1,4 +1,4 @@
-#' Correlation of mutational signatures
+#' @title Correlation of mutational signatures
 #'
 #'
 #' @param H1 Numeric matrix of mutational signatures.

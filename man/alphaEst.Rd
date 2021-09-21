@@ -4,7 +4,7 @@
 \alias{alphaEst}
 \title{Estimation of the overdispersion parameter for Negative Binomial non-negative matrix factorization}
 \usage{
-alphaEst(data, k, patient_specific = FALSE)
+alphaEst(data, k = NULL, patient_specific = FALSE)
 }
 \arguments{
 \item{data}{Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.}

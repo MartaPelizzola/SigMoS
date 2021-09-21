@@ -4,7 +4,7 @@
 \alias{NMFNBMM}
 \title{Negative Binomial non-negative matrix factorization}
 \usage{
-NMFNBMM(M, N, alpha, tol = 1e-05, seed = sample(1:1000, 1))
+NMFNBMM(M, N = NULL, alpha, tol = 1e-05, seed = sample(1:1000, 1))
 }
 \arguments{
 \item{M}{Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.}

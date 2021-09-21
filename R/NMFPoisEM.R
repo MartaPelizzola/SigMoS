@@ -1,6 +1,8 @@
-#' Poisson non-negative matrix factorization
+#' @import SQUAREM
+
+#' @title Poisson non-negative matrix factorization
 #'
-#' EM algorithm for poisson non-negative matrix factorization
+#' @description EM algorithm for poisson non-negative matrix factorization
 #'
 #'
 #' @param M Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.

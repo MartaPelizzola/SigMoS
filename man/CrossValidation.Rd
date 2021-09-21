@@ -6,7 +6,7 @@
 \usage{
 CrossValidation(
   data,
-  k,
+  k = NULL,
   n_iterations = 100,
   method = "NB",
   cost_f = "GKL",

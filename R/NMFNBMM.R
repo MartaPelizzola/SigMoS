@@ -1,6 +1,9 @@
-#' Negative Binomial non-negative matrix factorization
+#' @import SQUAREM
+
+
+#' @title Negative Binomial non-negative matrix factorization
 #'
-#' MM algorithm for negative binomial non-negative matrix factorization
+#' @description MM algorithm for negative binomial non-negative matrix factorization
 #'
 #'
 #' @param M Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.

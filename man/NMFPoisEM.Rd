@@ -4,7 +4,7 @@
 \alias{NMFPoisEM}
 \title{Poisson non-negative matrix factorization}
 \usage{
-NMFPoisEM(M, N, tol = 1e-05, seed = sample(1:1000, 1))
+NMFPoisEM(M, N = NULL, tol = 1e-05, seed = sample(1:1000, 1))
 }
 \arguments{
 \item{M}{Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.}

@@ -1,6 +1,6 @@
-#' Estimation of the overdispersion parameter for Negative Binomial non-negative matrix factorization
+#' @title Estimation of the overdispersion parameter for Negative Binomial non-negative matrix factorization
 #'
-#' Empirical Bayes estimation of the overdispersion parameter for Negative Binomial non-negative matrix factorization.
+#' @description Empirical Bayes estimation of the overdispersion parameter for Negative Binomial non-negative matrix factorization.
 #' The overdispersion parameter can be either vector of length one or vector of length no. of patients if patient-specific overdispersion is used.
 #'
 #'
