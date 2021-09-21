@@ -1,5 +1,6 @@
 #' @import foreach
 #' @import doParallel
+#' @import parallel
 #'
 #'
 #' @title Cross-validation and model selection pipeline for learning of mutational signatures

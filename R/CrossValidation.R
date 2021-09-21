@@ -1,6 +1,6 @@
 #' @import foreach
 #' @import doParallel
-#'
+#' @import parallel
 #'
 #' @title Cross-validation for the number of mutational signatures
 #'
