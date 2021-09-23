@@ -73,10 +73,10 @@ CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,pat
         result$NegBin$res_nmf <- res_nb
         result$NegBin$residuals <- rsd_nb
 
-        if (pp>=0.95){
-          print(paste0("The percentage of residual points within the expected variance lines is ", round(pp,2), " showing that the Negative Binomial model is appropriate for this data set."))
+        if (pp_nb>=0.95){
+          print(paste0("The percentage of residual points within the expected variance lines is ", round(pp_nb,2), " showing that the Negative Binomial model is appropriate for this data set."))
         } else {
-          print(paste0("The percentage of residual points within the expected variance lines is ", round(pp,2), " showing overdispersion."))
+          print(paste0("The percentage of residual points within the expected variance lines is ", round(pp_nb,2), " showing overdispersion under the Negative Binomial model."))
         }
         #### Return result Poisson and Negative Binomial
       }
