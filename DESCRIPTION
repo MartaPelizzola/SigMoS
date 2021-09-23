@@ -1,4 +1,4 @@
-Package: SigModeling
+Package: SiNB
 Type: Package
 Title: Procedure to analyse mutational counts data from cancer patients: model selection and model diagnostics
 Version: 0.1.0
