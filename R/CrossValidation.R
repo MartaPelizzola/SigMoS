@@ -49,7 +49,7 @@ CrossValidation <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="
     cl <- makeCluster(cores[1]-1)
     registerDoParallel(cl)
 
-    cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM', 'SigModeling'), .export = ls(globalenv())) %dopar% {
+    cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM', 'SiNB'), .export = ls(globalenv())) %dopar% {
       n <- ncol(data)
       train_set = sample(1:n, size_train*n)
       res_train <- NMFNBMM(M=data[,train_set], N=k, alpha = alpha)
@@ -87,7 +87,7 @@ CrossValidation <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="
     cl <- makeCluster(cores[1]-1)
     registerDoParallel(cl)
 
-    cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM', 'SigModeling'), .export = ls(globalenv())) %dopar% {
+    cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM', 'SiNB'), .export = ls(globalenv())) %dopar% {
       n <- ncol(data)
       train_set = sample(1:n, size_train*n)
       res_train <- NMFPoisEM(M=data[,train_set], N=k)
