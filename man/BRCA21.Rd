@@ -5,10 +5,10 @@
 \alias{BRCA21}
 \title{Mutational counts for 21 breast cancer patients}
 \format{
-A data matrix with 96 rows and 21 columns:
+A data matrix with 96 rows and 21 columns.
 }
 \source{
-\url{http://www.findUrl.dk}
+\url{https://doi.org/10.1016/j.cell.2012.04.023}
 }
 \usage{
 BRCA21

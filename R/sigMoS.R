@@ -23,7 +23,7 @@
 #'  - \texttt{FullDataCost} is the cost for the fit of the full data
 #'
 #' @export
-sigMoS <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-3){
+sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-3){
   if (k!=round(k)){
     stop("The number of signatures must be an integer.")
   }

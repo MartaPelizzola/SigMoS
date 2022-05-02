@@ -4,7 +4,7 @@
 #' for 21 breast cancer patients.
 #'
 #'
-#' @format A data matrix with 96 rows and 21 columns:
+#' @format A data matrix with 96 rows and 21 columns.
 #'
-#' @source \url{http://www.findUrl.dk}
+#' @source \url{https://doi.org/10.1016/j.cell.2012.04.023}
 "BRCA21"

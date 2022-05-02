@@ -22,18 +22,18 @@ library(SigMoS)
 ## Assuming poisson
 
 ```{r}
-res_pois = sigMoS(data = BRCA21, k = 3, method = "Poisson")
+res_pois = sigmos(data = BRCA21, k = 3, method = "Poisson")
 ```
 
 
 ## Assuming negative binomial
 
 ```{r}
-res_nb = sigMoS(data = BRCA21, k = 3, method = "NB")
+res_nb = sigmos(data = BRCA21, k = 3, method = "NB")
 ```
 
 ## Assuming negative binomial with patient specific dispersion
 
 ```{r}
-res_nb = sigMoS(data = BRCA21, k = 3, method = "NB", patient_specific=TRUE)
+res_nb = sigmos(data = BRCA21, k = 3, method = "NB", patient_specific=TRUE)
 ```
