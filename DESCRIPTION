@@ -1,4 +1,4 @@
-Package: SiNB
+Package: SigMoS
 Type: Package
 Title: Procedure to analyse mutational counts data from cancer patients: model selection and model diagnostics
 Version: 0.1.0
@@ -10,4 +10,10 @@ Encoding: UTF-8
 LazyData: true
 Imports: SQUAREM, foreach, doParallel
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1.9000
+RoxygenNote: 7.1.2
+Depends: 
+    R (>= 2.10)
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
