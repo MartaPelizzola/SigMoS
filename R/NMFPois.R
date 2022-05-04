@@ -17,7 +17,7 @@
 #'
 #'
 
-NMFPoisEM = function(M,N=NULL, tol = 1e-5, seed = sample(1:1000,1)){
+NMFPois = function(M,N=NULL, tol = 1e-5, seed = sample(1:1000,1)){
   if (N!=round(N)){
     stop("The number of signatures must be an integer.")
   }
@@ -28,7 +28,7 @@ NMFPoisEM = function(M,N=NULL, tol = 1e-5, seed = sample(1:1000,1)){
     stop("A value for the number of signatures to be estimated is missing.")
   }
   if(length(N)!=1){
-    stop("More than one value for the number of signatures is used as input. NB-NMF can only be performed for one value of 'N' at a time.")
+    stop("More than one value for the number of signatures is used as input. Po-NMF can only be performed for one value of 'N' at a time.")
   }
 
   K <- dim(M)[1]  # mutations

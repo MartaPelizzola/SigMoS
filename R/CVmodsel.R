@@ -19,12 +19,12 @@
 #' @param tol Threshold for convergence of the EM and MM algorithms for estimating mutational signatures. Default is 1e-5.
 #'
 #'
-#' @return List of non-negative matrix factorization and residuals results for Poisson model if only the Poisson model is used.
-#' If the Negative Binomial model is used too returns a list of length two with one element per model (Poisson and NegBin). Each of them is a list of two elements for the results of the matrix factorization and the residuals.
+#' @return List of non-negative matrix factorization (with number of signatures chosen with the sigmos function) and residuals results for Poisson model if only the Poisson model is used.
+#' If the Negative Binomial model is used too, the function returns a list of length two with one element per model (Poisson and NegBin). Each of them is a list of two elements for the results of the matrix factorization (with number of signatures chosen with the sigmos) and the residuals.
 #'
 #' @export
 
-CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5){
+CVmodsel <- function(data,k=2:8,n_iterations=100,cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5, seed = sample(1:1000,3)){
   if(is.null(data)){
     stop("The data set of the mutational counts is missing.")
   }
@@ -33,56 +33,79 @@ CVmodsel <- function(data,k=2:3,n_iterations=100,cost_f="GKL",size_train=0.9,pat
     stop("The values for the number of signatures to be tested must be integers.")
   }
 
+  #### check Poisson
+  cost <- c()
   for (i in k){
-    #### check Poisson
-    tmp_cost <- CrossValidation(data,i,n_iterations,method = "Poisson", cost_f,size_train,patient_specific,tol)
-    cost <- tmp_cost$cost_k
-    k_poisson <- k[which.min(cost)]
-    res <- NMFPoisEM(data, k_poisson)
+    tmp_cost <- sigmos(data,i,n_iterations,method = "Poisson", cost_f,size_train,patient_specific,tol)
+    cost <- c(cost, tmp_cost$cost_k)
+  }
+  k_poisson <- k[which.min(cost)]
+  res <- NMFPois(data, k_poisson, tol = tol, seed = seed)
 
-    W <- res$E
-    H <- res$P
-    #### check residuals
-    rsd = (data - H%*%W)
-    pp <- length(which(rsd<2*sqrt(data) & rsd>-2*sqrt(data)))/length(rsd)
+  W <- res$E
+  H <- res$P
+  #### check residuals
+  rsd = (data - H%*%W)
+  pp <- length(which(rsd<2*sqrt(data) & rsd>-2*sqrt(data)))/length(rsd)
 
-    result <- list()
-    result$Poisson <- list()
-    result$Poisson$res_nmf <- res
-    result$Poisson$residuals <- rsd
+  if(pp < 0.95){
+    #### Poisson fit is not good. Ask if NB check should be done
+    x <- menu(c("Yes", "No"), title=paste0("The percentage of residual points within the expected variance lines is ", round(pp,2), " showing overdispersion. Do you want to apply the negative binomial model?"))
+    if (x==1){
+      #### Build the result variable for the negative binomial case
+      result <- list()
+      result$Poisson <- list()
+      result$Poisson$res_nmf <- res
+      result$Poisson$residuals <- rsd
+      result$NegBin <- list()
 
-    if(pp < 0.95){
-      #### Poisson fit is not good. Ask if NB check should be done
-      x <- menu(c("Yes", "No"), title=paste0("The percentage of residual points within the expected variance lines is ", round(pp,2), " showing overdispersion. Do you want to apply the negative binomial model?"))
-      if (x==1){
-        #### check Negative Binomial
-        tmp_cost <- CrossValidation(data,i,n_iterations,method = "NB", cost_f,size_train,patient_specific,tol)
-        cost_nb <- tmp_cost$cost_k
+      #### check Negative Binomial
+      cost_nb <- c()
+      for (i in k){
+        tmp_cost <- sigmos(data,i,n_iterations,method = "NB", cost_f,size_train,patient_specific,tol)
+        cost_nb <- c(cost_nb,tmp_cost$cost_k)
+      }
 
-        k_nb <- k[which.min(cost_nb)]
-        alpha <- alphaEst(data,k_nb,patient_specific)
-        res_nb <- NMFNBMM(data, k_nb,alpha = alpha)
+      k_nb <- k[which.min(cost_nb)]
+      alpha <- alphaNR(data,k_nb,patient_specific)
+      res_nb <- NMFNB(data, k_nb,alpha = alpha, tol = tol, seed = seed)
 
-        W_nb <- res_nb$E
-        H_nb <- res_nb$P
-        #### check residuals
-        rsd_nb = (data - H_nb%*%W_nb)
-        pp_nb <- length(which(rsd_nb<2*sqrt(data) & rsd_nb>-2*sqrt(data)))/length(rsd_nb)
+      W_nb <- res_nb$E
+      H_nb <- res_nb$P
+      #### check residuals
+      rsd_nb = (data - H_nb%*%W_nb)
+      pp_nb <- length(which(rsd_nb<2*sqrt(data*(1+data/alpha)) & rsd_nb>-2*sqrt(data*(1+data/alpha))))/length(rsd_nb)
 
-        result$NegBin <- list()
-        result$NegBin$res_nmf <- res_nb
-        result$NegBin$residuals <- rsd_nb
 
-        if (pp_nb>=0.95){
-          print(paste0("The percentage of residual points within the expected variance lines is ", round(pp_nb,2), " showing that the Negative Binomial model is appropriate for this data set."))
+      if (pp_nb>=0.95){
+        print(paste0("The percentage of residual points within the expected variance lines is ", round(pp_nb,2), " showing that the Negative Binomial model is appropriate for this data set."))
+      } else {
+        if(patient_specific==FALSE){
+          print(paste0("The percentage of residual points within the expected variance lines is ", round(pp_nb,2), " showing overdispersion under the Negative Binomial model. Using patient specific overdispersion may improve the results"))
         } else {
           print(paste0("The percentage of residual points within the expected variance lines is ", round(pp_nb,2), " showing overdispersion under the Negative Binomial model."))
         }
-        #### Return result Poisson and Negative Binomial
       }
+
+      #### Return result Poisson and Negative Binomial
+      result$NegBin$res_nmf <- res_nb
+      result$NegBin$residuals <- rsd_nb
     }
+    if (x == 2){
+      #### Do not check for negative binomial & return Poisson results
+      print(paste0("The percentage of residual points within the expected variance lines is ", round(pp,2), " showing overdispersion under the Poisson model."))
+
+      result <- list()
+      result$res_nmf <- res
+      result$residuals <- rsd
+    }
+  } else {
+    #### Poisson model is good, return Poisson results
+    print(paste0("The percentage of residual points within the expected variance lines is ", round(pp,2), " showing that the Poisson model is appropriate for this data set."))
+
+    result <- list()
+    result$res_nmf <- res
+    result$residuals <- rsd
   }
-
   return(result)
-
 }

@@ -18,7 +18,7 @@
 #' @export
 #'
 #'
-NMFNBMM = function(M, N=NULL, alpha, tol = 1e-3, seed = sample(1:1000,1)){
+NMFNB = function(M, N=NULL, alpha, tol = 1e-3, seed = sample(1:1000,1)){
   if (N!=round(N)){
     stop("The number of signatures must be an integer.")
   }
@@ -43,54 +43,54 @@ NMFNBMM = function(M, N=NULL, alpha, tol = 1e-3, seed = sample(1:1000,1)){
   Plist <- list()            # list of P matrices
   Elist <- list()            # list of E matrices
   reslist <- list()
-  
+
   alphamat = matrix(alpha, nrow = K, ncol = G, byrow = T)
 
   NB.em = function(x){
     x = exp(x)
     P = matrix(x[1:(K*N)], nrow = K, ncol = N)
     E = matrix(x[-c(1:(K*N))], nrow = N, ncol = G)
-    
+
     PE = P%*%E
     P <- P * ( ( ( M / (PE) ) %*% t(E) ) / ( ( (alphamat + M) / (alphamat + PE) ) %*% t(E) ) )     # update of signatures
     PE = P%*%E
     E <- E * ( (t(P) %*% ( M / (PE) ) ) / (t(P) %*% ( (alphamat + M) / (alphamat + PE) ) ) )     # update of exposures
-    
+
     par = c(as.vector(P),as.vector(E))
     par[par <= 0] = 1e-50
     return(log(par))
   }
-  
-  # divergence 
+
+  # divergence
   # NBobj = function(x){
   #   x = exp(x)
   #   P = matrix(x[1:(K*N)], nrow = K, ncol = N)
   #   E = matrix(x[-c(1:(K*N))], nrow = N, ncol = G)
-  # 
+  #
   #   PE = as.vector(t(P%*%E))
   #   M = as.vector(t(M))
   #   r <- -(M+alpha)*(log(alpha + M) - log(alpha + PE))
   #   p <- which(M > 0)
   #   r[p] <- (M * (log(M)- log(PE)) - (M+alpha)*(log(alpha + M) - log(alpha + PE)))[p]
-  # 
+  #
   #   obj = sum(r) # euclidean distance
-  # 
+  #
   #   return(obj)
   # }
-  
+
   # likelihood function
   NBlik = function(x){
     x = exp(x)
     P = matrix(x[1:(K*N)], nrow = K, ncol = N)
     E = matrix(x[-c(1:(K*N))], nrow = N, ncol = G)
-    
+
     y = as.vector(t(M))
     mu = as.vector(t(P%*%E))
-    
+
     prob = 1-(mu/(alpha + mu))
 
     r = dnbinom(y, alpha, ifelse(prob != 0,prob, 1e-16), log = T)
-    
+
     return(sum(r))
   }
 
