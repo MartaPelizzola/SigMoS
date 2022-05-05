@@ -6,12 +6,13 @@
 \usage{
 CVmodsel(
   data,
-  k = 2:3,
+  k = 2:8,
   n_iterations = 100,
   cost_f = "GKL",
   size_train = 0.9,
   patient_specific = FALSE,
-  tol = 1e-05
+  tol = 1e-05,
+  seed = sample(1:1000, 3)
 )
 }
 \arguments{
@@ -30,8 +31,8 @@ CVmodsel(
 \item{tol}{Threshold for convergence of the EM and MM algorithms for estimating mutational signatures. Default is 1e-5.}
 }
 \value{
-List of non-negative matrix factorization and residuals results for Poisson model if only the Poisson model is used.
-If the Negative Binomial model is used too returns a list of length two with one element per model (Poisson and NegBin). Each of them is a list of two elements for the results of the matrix factorization and the residuals.
+List of non-negative matrix factorization (with number of signatures chosen with the sigmos function) and residuals results for Poisson model if only the Poisson model is used.
+If the Negative Binomial model is used too, the function returns a list of length two with one element per model (Poisson and NegBin). Each of them is a list of two elements for the results of the matrix factorization (with number of signatures chosen with the sigmos) and the residuals.
 }
 \description{
 Analysis pipeline with model selection and cross-validation for extracting mutational signatures from

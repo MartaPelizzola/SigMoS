@@ -18,9 +18,9 @@
 #'
 #'
 #' @return List of length two including the costs.
-#'  - \texttt{cost} is a vector of length n_iterations where the cost for each iteration is stored.
-#'  - \texttt{cost_k} is the median of the values in 'cost' and it is used for comparison to choose the best number of signatures for a given data set.
-#'  - \texttt{FullDataCost} is the cost for the fit of the full data
+#'  - **cost** is a vector of length n_iterations where the cost for each iteration is stored.
+#'  - **cost_k** is the median of the values in 'cost' and it is used for comparison to choose the best number of signatures for a given data set.
+#'  - **FullDataCost** is the cost for the fit of the full data
 #'
 #' @export
 sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-3){
@@ -44,7 +44,7 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
 
   if(method=="NB"){
     alpha <- alphaNR(data,k,patient_specific)
-    res_nb <- NMFNBMM(M=data, N=k, alpha = alpha, tol = tol, seed = sample(1:1000,5))
+    res_nb <- NMFNB(M=data, N=k, alpha = alpha, tol = tol, seed = sample(1:1000,5))
 
     cores=detectCores()
     cl <- makeCluster(cores[1]-1)
@@ -54,9 +54,9 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
       n <- ncol(data)
       train_set = sample(1:n, size_train*n)
       if(patient_specific){
-        res_train <- NMFNBMM(M=data[,train_set], N=k, alpha = alpha[train_set], tol = tol)
+        res_train <- NMFNB(M=data[,train_set], N=k, alpha = alpha[train_set], tol = tol)
       }else{
-        res_train <- NMFNBMM(M=data[,train_set], N=k, alpha = alpha, tol = tol)
+        res_train <- NMFNB(M=data[,train_set], N=k, alpha = alpha, tol = tol)
       }
 
       h_train <- res_train$P
@@ -88,7 +88,7 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
     cv_results$FullDataCost = res_nb$div
     return(cv_results)
   } else{
-    res_nb <- NMFPoisEM(M=data, N=k, tol = tol, seed = sample(1:1000,5))
+    res_nb <- NMFPois(M=data, N=k, tol = tol, seed = sample(1:1000,5))
 
     cores=detectCores()
     cl <- makeCluster(cores[1]-1)
@@ -97,7 +97,7 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
     cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM'), .export = ls(globalenv())) %dopar% {
       n <- ncol(data)
       train_set = sample(1:n, size_train*n)
-      res_train <- NMFPoisEM(M=data[,train_set], N=k, tol = tol)
+      res_train <- NMFPois(M=data[,train_set], N=k, tol = tol)
       h_train <- res_train$P
 
       ord <- corSig(h_train,res_nb$P)$match

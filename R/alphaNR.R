@@ -27,34 +27,34 @@ alphaNR <- function(data, k=NULL, patient_specific = FALSE){
   if(length(k)!=1){
     stop("'k' has length larger than 1.")
   }
-  res_p <- NMFPoisEM(data,k,tol = 1e-2,
+  res_p <- NMFPois(data,k,tol = 1e-2,
                      seed = sample(100000,1))
   h_p <- res_p$P
   w_p <- res_p$E
-  
+
   # differentiated once
   neglikdiff1 = function(alpha, data, estimate){
     sum(digamma(data + alpha) - digamma(alpha) - data/(alpha+estimate) - alpha/(alpha+estimate) + log(alpha/(alpha+estimate)) + 1)
   }
-  
+
   # differentiated twice
   neglikdiff2 = function(alpha, data, estimate){
     sum(trigamma(data + alpha) - trigamma(alpha) + data/(alpha+estimate)^2 + 1/alpha - 2/(alpha+estimate) + alpha/(alpha+estimate)^2)
   }
-  
+
   NR_alpha = function(data,estimate){
     alpha <- 1/var(data/estimate)
     alphaold = alpha + 5
     for(i in 1:10){
       alpha = alpha - neglikdiff1(alpha, data = data, estimate = estimate)/neglikdiff2(alpha, data = data, estimate = estimate)
       if(!(alpha > 0)){ alpha = runif(1,1,10)}
-      
+
       if(abs(alpha - alphaold) < 0.01) break
       alphaold = alpha
     }
     return(alpha)
   }
-  
+
   if(patient_specific){
     alpha = numeric(ncol(data))
     estimate = h_p%*%w_p
@@ -64,7 +64,7 @@ alphaNR <- function(data, k=NULL, patient_specific = FALSE){
     }else{
     data = as.vector(data)
     estimate = as.vector(h_p%*%w_p)
-    
+
     alpha = NR_alpha(data,estimate)
   }
 
@@ -84,34 +84,34 @@ alphaNR2 <- function(data, k=NULL, patient_specific = FALSE){
   if(length(k)!=1){
     stop("'k' has length larger than 1.")
   }
-  res_p <- NMFPoisEM(data,k,tol = 1e-2,
+  res_p <- NMFPois(data,k,tol = 1e-2,
                      seed = sample(100000,1))
   h_p <- res_p$P
   w_p <- res_p$E
-  
+
   # differentiated once
   neglikdiff1 = function(alpha, data, estimate){
     sum(digamma(data + alpha) - digamma(alpha) - data/(alpha+estimate) + estimate/(alpha+estimate) + log(alpha/(alpha+estimate)))
   }
-  
+
   # differentiated twice
   neglikdiff2 = function(alpha, data, estimate){
     sum(trigamma(data + alpha) - trigamma(alpha) + data/(alpha+estimate)^2 + (estimate/alpha)/(alpha+estimate) - estimate/(alpha+estimate)^2)
   }
-  
+
   NR_alpha = function(data,estimate){
     alpha <- 1/var(data/estimate)
     alphaold = alpha + 5
     for(i in 1:20){
       alpha = alpha - neglikdiff1(alpha, data = data, estimate = estimate)/neglikdiff2(alpha, data = data, estimate = estimate)
       if(!(alpha > 0)){ alpha = runif(1,1,10)}
-      
+
       if(abs(alpha - alphaold) < 0.01) break
       alphaold = alpha
     }
     return(alpha)
   }
-  
+
   if(patient_specific){
     alpha = numeric(ncol(data))
     estimate = h_p%*%w_p
@@ -121,9 +121,9 @@ alphaNR2 <- function(data, k=NULL, patient_specific = FALSE){
   }else{
     data = as.vector(data)
     estimate = as.vector(h_p%*%w_p)
-    
+
     alpha = NR_alpha(data,estimate)
   }
-  
+
   return(alpha)
 }
