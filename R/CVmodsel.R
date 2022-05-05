@@ -3,9 +3,9 @@
 #' @import parallel
 #'
 #'
-#' @title Cross-validation and model selection pipeline for learning of mutational signatures
+#' @title Model selection pipeline for learning of mutational signatures
 #'
-#' @description Analysis pipeline with model selection and cross-validation for extracting mutational signatures from
+#' @description Analysis pipeline with model selection for extracting mutational signatures from
 #' mutational counts data using non-negative matrix factorization. A Poisson model is tested first and, if
 #' overdispersion is observed, then a Negative Binomial model is tested.
 #'

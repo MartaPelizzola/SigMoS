@@ -2,9 +2,9 @@
 #' @import doParallel
 #' @import parallel
 #'
-#' @title Cross-validation for the number of mutational signatures
+#' @title Model selection algorithm for the number of mutational signatures
 #'
-#' @description Cross-validation algorithm for a given number of signatures k using either Poisson or Negative Binomial model.
+#' @description Model selection algorithm for a given number of signatures k using either Poisson or Negative Binomial model.
 #'
 #'
 #' @param data Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.
