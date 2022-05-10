@@ -19,6 +19,10 @@ library(SigMoS)
 
 ```
 
+We provide a detailed description of the pipeline for analyzing mutational counts data. 
+
+A typical mutational count data set we considered for the SigMoS package has 96 rows (equal to the number of mutation types when considering the 6 base mutations, when assuming strand symmetry and the 4 flanking nucleotides on each side) and as many columns as many patients are included in the data set. 
+
 ## Assuming poisson
 
 ```{r}
