@@ -15,29 +15,157 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+library(ggplot2)
 library(SigMoS)
-
 ```
 
 We provide a detailed description of the pipeline for analyzing mutational counts data. 
 
 A typical mutational count data set we considered for the SigMoS package has 96 rows (equal to the number of mutation types when considering the 6 base mutations, when assuming strand symmetry and the 4 flanking nucleotides on each side) and as many columns as many patients are included in the data set. 
 
-## Assuming poisson
 
-```{r}
-res_pois = sigmos(data = BRCA21, k = 3, method = "Poisson")
+Our analysis consists of the following steps:
+
+1. apply Poisson-NMF (cross-validation for choosing number of signatures assuming the Poisson distribution)
+
+2. Goodness of fit: residual analysis to validate Poisson assumption.
+
+3. If overdispersion is present: NB-NMF (cross-validation for choosing number of signatures assuming the Negative Binomial distribution) and its patient specific counterpart NB$_\text{N}$-NMF (dispersion parameter is patient specific)
+
+4. Likelihood ratio test to choose between NB-NMF and NB$_\text{N}$-NMF
+
+5. Residual analysis of the final Negative Binomial NMF model
+
+## Assuming poisson
+We start by applying the model selection function with the Poisson model:
+```{r poisson}
+k_vec <- 2:8
+nsig_pois <- list()
+cost <- c()
+for (i in k_vec){
+  nsig_pois[[i-1]] = sigmos(data = BRCA21, k = i, method = "Poisson")
+  cost = c(cost, nsig_pois[[i-1]]$cost_k)
+}
+k_poisson = k_vec[which.min(cost)]
 ```
+
+With the resulting optimal number of signatures we apply Poisson NMF to obtain the signature and exposure matrices under the Poisson distribution:
+
+```{r poissonNMF}
+res_pois = NMFPois(M = BRCA21, N = k_poisson)
+```
+
+Given these results we can check the residuals and obtain the following residual plot:
+
+```{r poissonRSD, warning = FALSE}
+
+W_p <- res_pois$E
+H_p <- res_pois$P
+rsd_p = (BRCA21 - H_p%*%W_p)
+rsd_norm = rsd_p/(sqrt(H_p%*%W_p))
+
+funupper = function(x) 2*sqrt(x)
+funlower = function(x) -2*sqrt(x)
+
+dataPois = data.frame(obs = as.vector(H_p%*%W_p),Residuals = as.vector(rsd_p), residual_norm = as.vector(rsd_norm))
+
+ggplot(dataPois, aes(x = obs, y = Residuals))+
+  geom_point()+
+  scale_x_log10()+
+  stat_function(fun = funupper, color = "#0072B2", size = 1 ) + 
+  stat_function(fun = funlower, color = "#0072B2", size = 1 ) +
+  ylim(-100,100) + 
+  theme(strip.background = element_blank(), strip.text = element_blank(),
+        axis.text = element_text(size=14),
+        axis.title.x = element_text(size=20),
+        axis.title.y = element_text(size=20),
+        line = element_line(margin(b = 6, l = 6)), 
+        legend.position = "none", 
+        plot.title = element_text(size = 20)) +
+  xlab("Estimated mean") + ylab("Raw residuals")
+
+```
+
+The plot shows overdispersion under the Poisson model, thus we proceed considering the negative binomial model. 
 
 
 ## Assuming negative binomial
+Following the same procedure as for the Poisson case, we first find the optimal number of signatures under the Negative Binomial model with our model selection approach and then we estimate the signature and exposure matrices with NMF.
 
-```{r}
-res_nb = sigmos(data = BRCA21, k = 3, method = "NB")
+```{r NB, warning = FALSE}
+k_vec <- 2:8
+nsig_nb <- list()
+cost <- c()
+for (i in k_vec){
+  nsig_nb[[i-1]] = sigmos(data = BRCA21, k = i, method = "NB")
+  cost <- c(cost, nsig_nb[[i-1]]$cost_k)
+}
+k_NB <- k_vec[which.min(cost)]
+
+
+alpha <- alphaNR(BRCA21,k_NB)
+res_nb = NMFNB(M = BRCA21, N = k_NB, alpha = alpha)
 ```
 
 ## Assuming negative binomial with patient specific dispersion
+Here we repeat the same procedure using the Negative Binomial distribution with patient specific dispersion.
 
-```{r}
-res_nb = sigmos(data = BRCA21, k = 3, method = "NB", patient_specific=TRUE)
+```{r NBpatientspecific, warning = FALSE}
+k_vec <- 2:8
+nsig_nb_ps <- list()
+cost <- c()
+for (i in k_vec){
+  nsig_nb_ps[[i-1]] = sigmos(data = BRCA21, k = i, method = "NB", patient_specific = TRUE)
+  cost <- c(cost, nsig_nb_ps[[i-1]]$cost_k)
+}
+k_NB_ps <- k_vec[which.min(cost)]
+
+
+alpha_ps <- alphaNR(BRCA21,k_NB_ps, patient_specific = TRUE)
+res_nb_ps = NMFNB(M = BRCA21, N = k_NB_ps, alpha = alpha_ps)
+```
+
+## Likelihood ratio test between NB-NMF and NB$_\text{N}$-NMF
+With the results from the NB-NMF and NB$_\text{N}$-NMF, we can now apply a likelihood ratio test to choose between these two models.
+
+```{r LRT, warning = FALSE}
+ll1 <- sum(dnbinom(as.vector(BRCA21), alpha, 
+                   1-(as.vector(res_nb$P%*%res_nb$E)/(alpha +                                 as.vector(res_nb$P%*%res_nb$E))), log = T))
+
+llN <- sum(dnbinom(as.vector(BRCA21), alpha_ps, 
+                   1-(as.vector(res_nb_ps$P%*%res_nb_ps$E)/(alpha_ps + 
+                      as.vector(res_nb_ps$P%*%res_nb_ps$E))), log = T))
+
+lrt <- -2*(ll1-llN)
+pchisq(lrt, df=length(alpha_ps)-1, lower.tail=FALSE) #1
+```
+
+## Residual plot for the chosen Negative Binomial model 
+
+```{r NBresiduals, warning = FALSE}
+
+W_nb_ps <- res_nb_ps$E
+H_nb_ps <- res_nb_ps$P
+rsd_nb_ps = (BRCA21 - H_nb_ps%*%W_nb_ps)
+rsd_norm = rsd_nb_ps/(sqrt(H_nb_ps%*%W_nb_ps))
+
+funupper = function(x) 2*sqrt(x*(1+x/alpha))
+funlower = function(x) -2*sqrt(x*(1+x/alpha))
+
+dataNB = data.frame(obs = as.vector(H_nb_ps%*%W_nb_ps),Residuals = as.vector(rsd_nb_ps), residual_norm = as.vector(rsd_norm))
+
+ggplot(dataPois, aes(x = obs, y = Residuals))+
+  geom_point()+
+  scale_x_log10()+
+  stat_function(fun = funupper, color = "#009E73", size = 1 ) + 
+  stat_function(fun = funlower, color = "#009E73", size = 1 ) +
+  ylim(-100,100) + 
+  theme(strip.background = element_blank(), strip.text = element_blank(),
+        axis.text = element_text(size=14),
+        axis.title.x = element_text(size=20),
+        axis.title.y = element_text(size=20),
+        line = element_line(margin(b = 6, l = 6)), 
+        legend.position = "none", 
+        plot.title = element_text(size = 20)) +
+  xlab("Estimated mean") + ylab("Raw residuals")
 ```
