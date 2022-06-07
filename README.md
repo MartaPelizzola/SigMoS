@@ -1,6 +1,7 @@
 # SigMoS
 Cross-validation and model selection for robust learning of mutational signatures
 
+Our package provides functions for estimating mutational signatures from mutational count data from cancer patients. 
 Our analysis consists of the following steps:
 
 1. apply Poisson-NMF (cross-validation for choosing number of signatures assuming the Poisson distribution)
@@ -13,7 +14,7 @@ Our analysis consists of the following steps:
 
 5. Residual analysis of the final Negative Binomial NMF model
 
-See our vignettes for more details
+See our vignettes for more details.
 
 Our preprint can be found at 
 
