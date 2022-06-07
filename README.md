@@ -20,5 +20,6 @@ Our preprint can be found at
 
 # Authors
 Ragnhild Laursen (ragnhild@math.au.dk)
+
 Marta Pelizzola (marta@math.au.dk)
 
