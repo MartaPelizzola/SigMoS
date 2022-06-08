@@ -16,7 +16,7 @@ Our analysis consists of the following steps:
 
 See our vignettes for more details.
 
-Our preprint can be found at 
+Our preprint can be found at https://arxiv.org/abs/2206.03257
 
 # Authors
 Ragnhild Laursen (ragnhild@math.au.dk)
