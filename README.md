@@ -1,5 +1,5 @@
 # SigMoS
-Cross-validation and model selection for robust learning of mutational signatures
+Model selection for robust learning of mutational signatures
 
 Our package provides functions for estimating mutational signatures from mutational count data from cancer patients. 
 Our analysis consists of the following steps:
@@ -20,17 +20,24 @@ Our preprint can be found at https://arxiv.org/abs/2206.03257
 
 # Examples on how to use the functions 
 
+The package can be installed using the package **devtools**
+
+```{r}
+devtools::install_github("MartaPelizzola/SigMoS")
+library(SigMoS)
+```
+
 Assuming Poisson as the underlying distribution for NMF we can apply our model selection procedure:
 
 ```{r poisson}
-k_vec <- 2:8
-nsig_pois <- list()
-cost <- c()
-for (i in k_vec){
-  nsig_pois[[i-1]] = sigmos(data = BRCA21, k = i, method = "Poisson")
-  cost = c(cost, nsig_pois[[i-1]]$cost_k)
+k_vec <- 2:8                          # a range of the number of signatures assumed
+nsig_pois <- list()                   # list of outputs for each assumed number of signatures
+cost <- c()                           # vector of cost values from the model selection procedure
+for (i in 1:length(k_vec)){
+  nsig_pois[[i]] = sigmos(data = BRCA21, k = i, method = "Poisson")
+  cost = c(cost, nsig_pois[[i]]$cost_k)
 }
-k_poisson = k_vec[which.min(cost)]
+k_poisson = k_vec[which.min(cost)]    # the assumed number of signatures with the smallest cost
 ```
 
 With the resulting optimal number of signatures we apply Poisson NMF to obtain the signature and exposure matrices under the Poisson distribution:
