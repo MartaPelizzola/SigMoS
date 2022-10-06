@@ -22,8 +22,24 @@
 #'  - **cost_k** is the median of the values in 'cost' and it is used for comparison to choose the best number of signatures for a given data set.
 #'  - **FullDataCost** is the cost for the fit of the full data
 #'
+#'
+#' @examples
+#' # Read data:
+#' load("SimulatedDataNBalpha200.rda")
+#' # Using SigMoS with the Negative Binomial distribution:
+#' res <- sigmos(SimulatedDataNBalpha200,k=5,patient_specific = TRUE)
+#' # Using SigMoS with the Poisson distribution:
+#' res <- sigmos(SimulatedDataNBalpha200,k=5,method="Poisson")
+#' # Find estimated number of signatures for the given example using the Poisson distribution. Evaluate no. of signatures between 2 and 7:
+#' res_cv <- list()
+#' CVcost <- rep(0,6)
+#' for (i in 2:7){
+#' res_cv[[i]] <- sigmos(SimulatedDataNBalpha200,k=i,method="Poisson")
+#'   CVcost[i-1] = res_cv[[i]]$cost_k
+#' }
+#' which.min(CVcost)+1 #estimated number of signatures
 #' @export
-sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-3){
+sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5){
   if (k!=round(k)){
     stop("The number of signatures must be an integer.")
   }
@@ -51,6 +67,7 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
     registerDoParallel(cl)
 
     cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM'), .export = ls(globalenv())) %dopar% {
+      set.seed(i)
       n <- ncol(data)
       train_set = sample(1:n, size_train*n)
       if(patient_specific){
@@ -95,6 +112,7 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
     registerDoParallel(cl)
 
     cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM'), .export = ls(globalenv())) %dopar% {
+      set.seed(i)
       n <- ncol(data)
       train_set = sample(1:n, size_train*n)
       res_train <- NMFPois(M=data[,train_set], N=k, tol = tol)
@@ -125,6 +143,8 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
     cv_results$cost <- cost
     cv_results$cost_k <- median(cost)
     cv_results$FullDataCost = -res_nb$gkl
+    cv_results$Signatures = res_nb$P
+    cv_results$Exposures = res_nb$E
     return(cv_results)
   }
 }
