@@ -24,10 +24,9 @@
 #'
 #'
 #' @examples
-#' load("data/SimulatedDataNBalpha200.rds")
-#' # Using SigMoS with the Negative Binomial distribution:
+#' # Use SigMoS with the Negative Binomial distribution:
 #' res <- sigmos(SimulatedDataNBalpha200,k=5,patient_specific = TRUE)
-#' # Using SigMoS with the Poisson distribution:
+#' # Use SigMoS with the Poisson distribution:
 #' res <- sigmos(SimulatedDataNBalpha200,k=5,method="Poisson")
 #' # Find estimated number of signatures for the given example using the Poisson distribution. Evaluate no. of signatures between 2 and 7:
 #' res_cv <- list()
