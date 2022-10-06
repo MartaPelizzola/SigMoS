@@ -24,6 +24,7 @@
 #'
 #'
 #' @examples
+#' load("data/SimulatedDataNBalpha200.rds")
 #' # Using SigMoS with the Negative Binomial distribution:
 #' res <- sigmos(SimulatedDataNBalpha200,k=5,patient_specific = TRUE)
 #' # Using SigMoS with the Poisson distribution:

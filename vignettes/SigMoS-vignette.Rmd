@@ -96,16 +96,24 @@ H_nb_ps <- res_nb_ps$P
 rsd_nb_ps = (BRCA21 - H_nb_ps%*%W_nb_ps)
 rsd_norm = rsd_nb_ps/(sqrt(H_nb_ps%*%W_nb_ps))
 
-funupper = function(x) 2*sqrt(x*(1+x/alpha_ps))
-funlower = function(x) -2*sqrt(x*(1+x/alpha_ps))
+funuppermin = function(x) 2*sqrt(x*(1+x/min(alpha_ps)))
+funlowermin = function(x) -2*sqrt(x*(1+x/min(alpha_ps)))
+funuppermax = function(x) 2*sqrt(x*(1+x/max(alpha_ps)))
+funlowermax = function(x) -2*sqrt(x*(1+x/max(alpha_ps)))
+funuppermedian = function(x) 2*sqrt(x*(1+x/median(alpha_ps)))
+funlowermedian = function(x) -2*sqrt(x*(1+x/median(alpha_ps)))
 
 dataNB = data.frame(obs = as.vector(H_nb_ps%*%W_nb_ps),Residuals = as.vector(rsd_nb_ps), residual_norm = as.vector(rsd_norm))
 
 ggplot(dataPois, aes(x = obs, y = Residuals))+
   geom_point()+
   scale_x_log10()+
-  stat_function(fun = funupper, color = "#009E73", size = 1 ) + 
-  stat_function(fun = funlower, color = "#009E73", size = 1 ) +
+  stat_function(fun = funuppermin, color = "#009E73", size = 1, alpha = 0.5) + 
+  stat_function(fun = funlowermin, color = "#009E73", size = 1, alpha = 0.5) +
+  stat_function(fun = funuppermax, color = "#009E73", size = 1, alpha = 0.5 ) + 
+  stat_function(fun = funlowermax, color = "#009E73", size = 1, alpha = 0.5 ) +
+  stat_function(fun = funuppermedian, color = "#009E73", size = 1 ) + 
+  stat_function(fun = funlowermedian, color = "#009E73", size = 1 ) +
   ylim(-100,100) + 
   theme(strip.background = element_blank(), strip.text = element_blank(),
         axis.text = element_text(size=14),
