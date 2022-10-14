@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # SigMoS package 
 
 This package includes a range of different functions.
@@ -40,5 +39,3 @@ See our vignettes for more details
 Ragnhild Laursen (ragnhild@math.au.dk)
 
 Marta Pelizzola (marta@math.au.dk)
-
->>>>>>> d7805b65e1cea0e44490076ae5b7d74603995008

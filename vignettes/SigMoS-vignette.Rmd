@@ -15,6 +15,8 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+library(devtools)
+install_github("MartaPelizzola/SigMoS")
 library(ggplot2)
 library(SigMoS)
 ```
@@ -36,14 +38,12 @@ for (i in k_vec){
 k_poisson = k_vec[which.min(cost)]
 ```
 
-<<<<<<< HEAD
-
 
 ## Assuming poisson
 =======
 ## 2. SigMoS with NB-NMF
 Following the same procedure as for the Poisson case, we can also choose the Negative Binomial distributional assumption and find the optimal number of signatures under the Negative Binomial model with our model selection approach.
->>>>>>> d7805b65e1cea0e44490076ae5b7d74603995008
+
 
 ```{r NBpatientspecific, warning = FALSE}
 k_vec <- 2:8
