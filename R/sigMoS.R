@@ -20,7 +20,9 @@
 #' @return List of length two including the costs.
 #'  - **cost** is a vector of length n_iterations where the cost for each iteration is stored.
 #'  - **cost_k** is the median of the values in 'cost' and it is used for comparison to choose the best number of signatures for a given data set.
-#'  - **FullDataCost** is the cost for the fit of the full data
+#'  - **FullDataCost** is the likelihood value for the fit of the full data
+#'  - **Signatures** The signature matrix for the full data
+#'  - **Exposures** The exposure matrix for the full data
 #'
 #'
 #' @examples
@@ -102,6 +104,8 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
     cv_results$cost <- cost
     cv_results$cost_k <- median(cost)
     cv_results$FullDataCost = res_nb$div
+    cv_results$Signatures = res_nb$P
+    cv_results$Exposures = res_nb$E
     return(cv_results)
   } else{
     res_nb <- NMFPois(M=data, N=k, tol = tol, seed = sample(1:1000,5))

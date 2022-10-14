@@ -38,9 +38,8 @@ for (i in k_vec){
 k_poisson = k_vec[which.min(cost)]
 ```
 
-
-## Assuming poisson
 =======
+
 ## 2. SigMoS with NB-NMF
 Following the same procedure as for the Poisson case, we can also choose the Negative Binomial distributional assumption and find the optimal number of signatures under the Negative Binomial model with our model selection approach.
 
