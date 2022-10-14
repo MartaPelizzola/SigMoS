@@ -15,27 +15,120 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+library(ggplot2)
 library(SigMoS)
-
 ```
 
+A typical mutational count data set we considered for the SigMoS package has 96 rows (equal to the number of mutation types with 6 base mutations, when assuming strand symmetry and the 4 flanking nucleotides on each side) and as many columns as many patients are included in the data set. 
+
+We show below the different options available in this R package. 
+
+## 1. SigMoS with Poisson-NMF
+When choosing the Poisson distributional assumption we can apply the model selection function with the Poisson model as follows:
+```{r poisson}
+k_vec <- 2:8
+nsig_pois <- list()
+cost <- c()
+for (i in k_vec){
+  nsig_pois[[i-1]] = sigmos(data = BRCA21, k = i, method = "Poisson")
+  cost = c(cost, nsig_pois[[i-1]]$cost_k)
+}
+k_poisson = k_vec[which.min(cost)]
+```
+
+<<<<<<< HEAD
 
 
 ## Assuming poisson
+=======
+## 2. SigMoS with NB-NMF
+Following the same procedure as for the Poisson case, we can also choose the Negative Binomial distributional assumption and find the optimal number of signatures under the Negative Binomial model with our model selection approach.
+>>>>>>> d7805b65e1cea0e44490076ae5b7d74603995008
 
-```{r}
-res_pois = sigmos(data = BRCA21, k = 3, method = "Poisson")
+```{r NBpatientspecific, warning = FALSE}
+k_vec <- 2:8
+nsig_nb_ps <- list()
+cost <- c()
+for (i in k_vec){
+  nsig_nb_ps[[i-1]] = sigmos(data = BRCA21, k = i, method = "NB", patient_specific = TRUE)
+  cost <- c(cost, nsig_nb_ps[[i-1]]$cost_k)
+}
+k_NB_ps <- k_vec[which.min(cost)]
 ```
 
+## 3. Residual analysis as in Pelizzola et al. 2022
+## 3a. Residual analysis under the Poisson distributional assumption
+Given these results we can check the residuals and obtain the following residual plot:
 
-## Assuming negative binomial
+```{r poissonRSD, warning = FALSE}
+res_pois = NMFPois(M = BRCA21, N = k_poisson)
+W_p <- res_pois$E
+H_p <- res_pois$P
+rsd_p = (BRCA21 - H_p%*%W_p)
+rsd_norm = rsd_p/(sqrt(H_p%*%W_p))
 
-```{r}
-res_nb = sigmos(data = BRCA21, k = 3, method = "NB")
+funupper = function(x) 2*sqrt(x)
+funlower = function(x) -2*sqrt(x)
+
+dataPois = data.frame(obs = as.vector(H_p%*%W_p),Residuals = as.vector(rsd_p), residual_norm = as.vector(rsd_norm))
+
+ggplot(dataPois, aes(x = obs, y = Residuals))+
+  geom_point()+
+  scale_x_log10()+
+  stat_function(fun = funupper, color = "#0072B2", size = 1 ) + 
+  stat_function(fun = funlower, color = "#0072B2", size = 1 ) +
+  ylim(-100,100) + 
+  theme(strip.background = element_blank(), strip.text = element_blank(),
+        axis.text = element_text(size=14),
+        axis.title.x = element_text(size=20),
+        axis.title.y = element_text(size=20),
+        line = element_line(margin(b = 6, l = 6)), 
+        legend.position = "none", 
+        plot.title = element_text(size = 20)) +
+  xlab("Estimated mean") + ylab("Raw residuals")
+
 ```
 
-## Assuming negative binomial with patient specific dispersion
+The plot shows overdispersion under the Poisson model, thus we proceed considering the negative binomial model. 
 
-```{r}
-res_nb = sigmos(data = BRCA21, k = 3, method = "NB", patient_specific=TRUE)
+## 3b. Residual analysis under the Negative Binomial distributional assumption
+
+```{r NBresiduals, warning = FALSE}
+alpha_ps <- alphaNR(BRCA21,k_NB_ps, patient_specific = TRUE)
+res_nb_ps = NMFNB(M = BRCA21, N = k_NB_ps, alpha = alpha_ps)
+
+W_nb_ps <- res_nb_ps$E
+H_nb_ps <- res_nb_ps$P
+rsd_nb_ps = (BRCA21 - H_nb_ps%*%W_nb_ps)
+rsd_norm = rsd_nb_ps/(sqrt(H_nb_ps%*%W_nb_ps))
+
+funuppermin = function(x) 2*sqrt(x*(1+x/min(alpha_ps)))
+funlowermin = function(x) -2*sqrt(x*(1+x/min(alpha_ps)))
+funuppermax = function(x) 2*sqrt(x*(1+x/max(alpha_ps)))
+funlowermax = function(x) -2*sqrt(x*(1+x/max(alpha_ps)))
+funuppermedian = function(x) 2*sqrt(x*(1+x/median(alpha_ps)))
+funlowermedian = function(x) -2*sqrt(x*(1+x/median(alpha_ps)))
+
+dataNB = data.frame(obs = as.vector(H_nb_ps%*%W_nb_ps),Residuals = as.vector(rsd_nb_ps), residual_norm = as.vector(rsd_norm))
+
+ggplot(dataPois, aes(x = obs, y = Residuals))+
+  geom_point()+
+  scale_x_log10()+
+  stat_function(fun = funuppermin, color = "#009E73", size = 1, alpha = 0.5) + 
+  stat_function(fun = funlowermin, color = "#009E73", size = 1, alpha = 0.5) +
+  stat_function(fun = funuppermax, color = "#009E73", size = 1, alpha = 0.5 ) + 
+  stat_function(fun = funlowermax, color = "#009E73", size = 1, alpha = 0.5 ) +
+  stat_function(fun = funuppermedian, color = "#009E73", size = 1 ) + 
+  stat_function(fun = funlowermedian, color = "#009E73", size = 1 ) +
+  ylim(-100,100) + 
+  theme(strip.background = element_blank(), strip.text = element_blank(),
+        axis.text = element_text(size=14),
+        axis.title.x = element_text(size=20),
+        axis.title.y = element_text(size=20),
+        line = element_line(margin(b = 6, l = 6)), 
+        legend.position = "none", 
+        plot.title = element_text(size = 20)) +
+  xlab("Estimated mean") + ylab("Raw residuals")
 ```
+
+The plot shows that the Negative Binomial model provides a much better fit to the data. 
