@@ -25,6 +25,7 @@ NMFNB = function(M, N=NULL, alpha, tol = 1e-3, seed = sample(1:1000,1)){
   if(is.null(M)){
     stop("The data set of the mutational counts is missing.")
   }
+  M <- t(M)
   if(is.null(N)){
     stop("A value for the number of signatures to be estimated is missing.")
   }
@@ -120,8 +121,8 @@ NMFNB = function(M, N=NULL, alpha, tol = 1e-3, seed = sample(1:1000,1)){
 
 
   Output <- list()
-  Output$P <-  P
-  Output$E <-  E
+  Output$P <-  t(P)
+  Output$E <-  t(E)
   Output$div <- div[best]
   Output$results <- reslist
 

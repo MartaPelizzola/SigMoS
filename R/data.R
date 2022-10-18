@@ -4,7 +4,7 @@
 #' for 21 breast cancer patients.
 #'
 #'
-#' @format A data matrix with 96 rows and 21 columns.
+#' @format A data matrix with 21 rows and 96 columns.
 #'
 #' @source \url{https://doi.org/10.1016/j.cell.2012.04.023}
 "BRCA21"
@@ -18,8 +18,8 @@
 #'
 #' We added Poisson noise to the simulated mutational counts data.
 #'
-#' @format A list of 100 elements where each element is a matrix with 96
-#' rows and 100 columns.
+#' @format A list of 100 elements where each element is a matrix with 100
+#' rows and 96 columns.
 #'
 #' @source Details on the simulation setup are available at \url{ourpaper}
 "SimulatedDataPoisson"
@@ -34,8 +34,8 @@
 #' We added Negative Binomial noise to the simulated mutational counts
 #' data with alpha  = 10 (i.e. high overdispersion).
 #'
-#' @format A list of 100 elements where each element is a matrix with 96
-#' rows and 100 columns.
+#' @format A list of 100 elements where each element is a matrix with 100
+#' rows and 96 columns.
 #'
 #' @source Details on the simulation setup are available at \url{ourpaper}
 "SimulatedDataNBalpha10"
@@ -50,8 +50,8 @@
 #' We added Negative Binomial noise to the simulated mutational counts
 #' data with alpha  = 200 (i.e. intermediate overdispersion).
 #'
-#' @format A list of 100 elements where each element is a matrix with 96
-#' rows and 100 columns.
+#' @format A list of 100 elements where each element is a matrix with 100
+#' rows and 96 columns.
 #'
 #' @source Details on the simulation setup are available at \url{ourpaper}
 "SimulatedDataNBalpha200"
@@ -67,8 +67,8 @@
 #' \url{https://doi.org/10.1016/j.cell.2012.04.023} (i.e. patient
 #' specific overdispersion).
 #'
-#' @format A list of 100 elements where each element is a matrix with 96
-#' rows and 100 columns.
+#' @format A list of 100 elements where each element is a matrix with 100
+#' rows and 96 columns.
 #'
 #' @source Details on the simulation setup are available at \url{ourpaper}
 "SimulatedDataNBn"

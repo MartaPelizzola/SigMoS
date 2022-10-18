@@ -2,7 +2,7 @@
 % Please edit documentation in R/sigMoS.R
 \name{sigmos}
 \alias{sigmos}
-\title{Cross-validation for the number of mutational signatures}
+\title{Model selection algorithm for the number of mutational signatures}
 \usage{
 sigmos(
   data,
@@ -16,7 +16,7 @@ sigmos(
 )
 }
 \arguments{
-\item{data}{Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.}
+\item{data}{Numeric matrix of mutational counts data. Matrix size: no. of patients x no. of mutation types.}
 
 \item{k}{Number of signatures to be used in the cross-validation.}
 
@@ -37,11 +37,13 @@ List of length two including the costs.
 \itemize{
 \item \strong{cost} is a vector of length n_iterations where the cost for each iteration is stored.
 \item \strong{cost_k} is the median of the values in 'cost' and it is used for comparison to choose the best number of signatures for a given data set.
-\item \strong{FullDataCost} is the cost for the fit of the full data
+\item \strong{FullDataCost} is the likelihood value for the fit of the full data
+\item \strong{Signatures} The signature matrix for the full data
+\item \strong{Exposures} The exposure matrix for the full data
 }
 }
 \description{
-Cross-validation algorithm for a given number of signatures k using either Poisson or Negative Binomial model.
+Model selection algorithm for a given number of signatures k using either Poisson or Negative Binomial model.
 }
 \examples{
 # Use SigMoS with the Negative Binomial distribution:

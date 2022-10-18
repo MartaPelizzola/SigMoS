@@ -4,7 +4,7 @@
 #' The overdispersion parameter can be either vector of length one or vector of length no. of patients if patient-specific overdispersion is used.
 #'
 #'
-#' @param data Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.
+#' @param data Numeric matrix of mutational counts data. Matrix size: no. of patients x no. of mutation types.
 #' @param k Number of signatures to be used for the non-negative matrix factorization
 #' @param patient_specific Logical. If TRUE patient-specific overdispersion is used in the Negative Binomial model.
 #'
@@ -21,6 +21,7 @@ alphaNR <- function(data, k=NULL, patient_specific = FALSE){
   if(is.null(data)){
     stop("The data set of the mutational counts is missing.")
   }
+  data <- t(data)
   if(is.null(k)){
     stop("A value for the number of signatures to be estimated is missing.")
   }

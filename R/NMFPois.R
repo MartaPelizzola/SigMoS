@@ -24,6 +24,7 @@ NMFPois = function(M,N=NULL, tol = 1e-5, seed = sample(1:1000,1)){
   if(is.null(M)){
     stop("The data set of the mutational counts is missing.")
   }
+  M <- t(M)
   if(is.null(N)){
     stop("A value for the number of signatures to be estimated is missing.")
   }
@@ -31,8 +32,8 @@ NMFPois = function(M,N=NULL, tol = 1e-5, seed = sample(1:1000,1)){
     stop("More than one value for the number of signatures is used as input. Po-NMF can only be performed for one value of 'N' at a time.")
   }
 
-  K <- dim(M)[1]  # mutations
-  G <- dim(M)[2]  # patients
+  K <- dim(M)[1]  # patients
+  G <- dim(M)[2]  # mutations
 
   div <- rep(0,length(seed)) # vector of different GKLD values
   Plist <- list()            # list of P matrices
@@ -89,8 +90,8 @@ NMFPois = function(M,N=NULL, tol = 1e-5, seed = sample(1:1000,1)){
   E = Elist[[best]]
 
   Output <- list()
-  Output$P <-  P
-  Output$E <-  E
+  Output$P <-  t(P)
+  Output$E <-  t(E)
   Output$gkl <- div[best]
   Output$results <- reslist
 

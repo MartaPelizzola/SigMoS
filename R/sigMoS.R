@@ -7,7 +7,7 @@
 #' @description Model selection algorithm for a given number of signatures k using either Poisson or Negative Binomial model.
 #'
 #'
-#' @param data Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.
+#' @param data Numeric matrix of mutational counts data. Matrix size: no. of patients x no. of mutation types.
 #' @param k Number of signatures to be used in the cross-validation.
 #' @param n_iterations Number of iterations for cross-validation procedure. Default is 100.
 #' @param method Non-negative matrix factorization model: 'Poisson' or 'NB' can be used. Default is 'NB' corresponding to the Negative Binomial model.
@@ -69,12 +69,12 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
 
     cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM'), .export = ls(globalenv())) %dopar% {
       set.seed(i)
-      n <- ncol(data)
+      n <- nrow(data)
       train_set = sample(1:n, size_train*n)
       if(patient_specific){
-        res_train <- NMFNB(M=data[,train_set], N=k, alpha = alpha[train_set], tol = tol)
+        res_train <- NMFNB(M=data[train_set,], N=k, alpha = alpha[train_set], tol = tol)
       }else{
-        res_train <- NMFNB(M=data[,train_set], N=k, alpha = alpha, tol = tol)
+        res_train <- NMFNB(M=data[train_set,], N=k, alpha = alpha, tol = tol)
       }
 
       h_train <- res_train$P
@@ -82,12 +82,12 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
       ord = corSig(h_train,res_nb$P)$match
 
       if (cost_f=="GKL"){
-        tmp_cost <- gklDiv(as.vector(data[,-train_set]), as.vector(h_train %*% res_nb$E[ord,-train_set]))
+        tmp_cost <- gklDiv(as.vector(data[-train_set,]), as.vector(res_nb$E[-train_set,ord] %*% h_train))
       } else if (cost_f=="Frobenius"){
-        tmp_cost = sqrt(sum((data[,-train_set]-(h_train %*% res_nb$E[ord,-train_set]))^2))
+        tmp_cost = sqrt(sum((data[-train_set,]-(res_nb$E[-train_set,ord] %*% h_train))^2))
       } else if (cost_f=="IS"){
-        a_div = as.vector(data[,-train_set])
-        b_div = as.vector(h_train %*% res_nb$E[ord,-train_set])
+        a_div = as.vector(data[-train_set,])
+        b_div = as.vector(res_nb$E[-train_set,ord] %*% h_train)
 
         zeros <- which(a_div>0)
         tmp_costIS <- b_div
@@ -95,7 +95,7 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
         tmp_cost <- sum(tmp_costIS)
       } else {
         warning(paste0("The tmp_cost function ", cost_f, "is not implemented. Generalized Kullback-Leibler will be used."))
-        tmp_cost <- gklDiv(as.vector(data[,-train_set]), as.vector(h_train %*% res_nb$E[ord,-train_set]))
+        tmp_cost <- gklDiv(as.vector(data[-train_set,]), as.vector(res_nb$E[-train_set,ord] %*% h_train))
       }
       tmp_cost
     }
@@ -116,20 +116,20 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
 
     cost <- foreach(i=1:n_iterations, .combine=c, .packages=c('SQUAREM'), .export = ls(globalenv())) %dopar% {
       set.seed(i)
-      n <- ncol(data)
+      n <- nrow(data)
       train_set = sample(1:n, size_train*n)
-      res_train <- NMFPois(M=data[,train_set], N=k, tol = tol)
+      res_train <- NMFPois(M=data[train_set,], N=k, tol = tol)
       h_train <- res_train$P
 
       ord <- corSig(h_train,res_nb$P)$match
 
       if (cost_f=="GKL"){
-        tmp_cost <- gklDiv(as.vector(data[,-train_set]), as.vector(h_train %*% res_nb$E[ord,-train_set]))
+        tmp_cost <- gklDiv(as.vector(data[-train_set,]), as.vector(res_nb$E[-train_set,ord] %*% h_train))
       } else if (cost_f=="Frobenius"){
-        tmp_cost = sqrt(sum((data[,-train_set]-(h_train %*% res_nb$E[ord,-train_set]))^2))
+        tmp_cost = sqrt(sum((data[-train_set,]-(res_nb$E[-train_set,ord] %*% h_train))^2))
       } else if (cost_f=="IS"){
-        a_div = as.vector(data[,-train_set])
-        b_div = as.vector(h_train %*% res_nb$E[ord,-train_set])
+        a_div = as.vector(data[-train_set,])
+        b_div = as.vector(res_nb$E[-train_set,ord] %*% h_train)
 
         zeros <- which(a_div>0)
         tmp_costIS <- b_div
@@ -137,7 +137,7 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
         tmp_cost <- sum(tmp_costIS)
       } else {
         warning(paste0("The tmp_cost function ", cost_f, "is not implemented. Generalized Kullback-Leibler will be used."))
-        tmp_cost <- gklDiv(as.vector(data[,-train_set]), as.vector(h_train %*% res_nb$E[ord,-train_set]))
+        tmp_cost <- gklDiv(as.vector(data[-train_set,]), as.vector(res_nb$E[-train_set,ord] %*% h_train))
       }
       tmp_cost
     }

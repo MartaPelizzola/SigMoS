@@ -7,7 +7,7 @@
 alphaNR(data, k = NULL, patient_specific = FALSE)
 }
 \arguments{
-\item{data}{Numeric matrix of mutational counts data. Matrix size: no. of mutation types x no. of patients.}
+\item{data}{Numeric matrix of mutational counts data. Matrix size: no. of patients x no. of mutation types.}
 
 \item{k}{Number of signatures to be used for the non-negative matrix factorization}
 

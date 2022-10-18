@@ -5,8 +5,8 @@
 \alias{SimulatedDataPoisson}
 \title{Simulated data with Poisson noise}
 \format{
-A list of 100 elements where each element is a matrix with 96
-rows and 100 columns.
+A list of 100 elements where each element is a matrix with 100
+rows and 96 columns.
 }
 \source{
 Details on the simulation setup are available at \url{ourpaper}
