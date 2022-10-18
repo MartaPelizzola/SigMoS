@@ -58,13 +58,13 @@ alphaNR <- function(data, k=NULL, patient_specific = FALSE){
 
   if(patient_specific){
     alpha = numeric(ncol(data))
-    estimate = h_p%*%w_p
+    estimate = t(w_p%*%h_p)
     for(i in 1:ncol(data)){
       alpha[i] = NR_alpha(data[,i],estimate[,i])
     }
     }else{
     data = as.vector(data)
-    estimate = as.vector(h_p%*%w_p)
+    estimate = as.vector(t(w_p%*%h_p))
 
     alpha = NR_alpha(data,estimate)
   }
@@ -115,13 +115,13 @@ alphaNR2 <- function(data, k=NULL, patient_specific = FALSE){
 
   if(patient_specific){
     alpha = numeric(ncol(data))
-    estimate = h_p%*%w_p
+    estimate = t(w_p%*%h_p)
     for(i in 1:ncol(data)){
       alpha[i] = NR_alpha(data[,i],estimate[,i])
     }
   }else{
     data = as.vector(data)
-    estimate = as.vector(h_p%*%w_p)
+    estimate = as.vector(t(w_p%*%h_p))
 
     alpha = NR_alpha(data,estimate)
   }
