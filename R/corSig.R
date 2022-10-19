@@ -7,14 +7,14 @@
 #'
 #' @return Vector of indexes to reorder the second matrix to match the first one.
 #' Also returns the full correlation matrix between the signatures.
-#' 
+#'
 #' @export
 corSig <- function(H1, H2){
   if (!all.equal(dim(H1),dim(H2))){
     stop("The two signature matrices need to have the same dimensions")
   }
-  dist <- cor(H1,H2)
-  K <- ncol(H1)
+  dist <- cor(t(H1),t(H2))
+  K <- nrow(H1)
   m <- numeric(K)
   distmat = dist
   for(s in 1:K){
@@ -23,7 +23,7 @@ corSig <- function(H1, H2){
     dist[remove[1,1],] <- -2
     dist[,remove[1,2]] <- -2
     m[remove[1,1]] <- remove[1,2]
-    
+
   }
   Output <- list()
   Output$distmat <- distmat      # the distance matrix of correlations
