@@ -16,4 +16,4 @@ Depends:
 Suggests: 
     rmarkdown,
     knitr
-VignetteBuilder: knitr
+VignetteBuilder: knitr, rmarkdown

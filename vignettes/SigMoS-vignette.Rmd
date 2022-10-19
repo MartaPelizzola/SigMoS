@@ -3,7 +3,7 @@ title: "An introduction to SigMoS package"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{SigMoS-vignette}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{rmarkdown::render}
   %\VignetteEncoding{UTF-8}
 ---
 
