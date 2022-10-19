@@ -44,7 +44,6 @@
 #' #  CVcost[i-1] = res_cv[[i]]$cost_k
 #' # }
 #' # which.min(CVcost)+1 #estimated number of signatures
-#' }
 #'
 #' @export
 sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5){
