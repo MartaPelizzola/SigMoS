@@ -28,18 +28,22 @@
 #' @examples
 #' # Use SigMoS with the Negative Binomial distribution:
 #' res <- sigmos(BRCA21,k=3,patient_specific = TRUE)
+#' str(res$Signatures)
+#' str(res$Exposures)
 #' # Use SigMoS with the Poisson distribution:
 #' res <- sigmos(BRCA21,k=3,method="Poisson")
-#' # Find estimated number of signatures for the given example using the Poisson distribution.
-#' # Evaluate no. of signatures between 2 and 7:
-#' \dontrun{
-#' res_cv <- list()
-#' CVcost <- rep(0,6)
-#' for (i in 2:7){
-#' res_cv[[i]] <- sigmos(BRCA21,k=i,method="Poisson")
-#'   CVcost[i-1] = res_cv[[i]]$cost_k
-#' }
-#' which.min(CVcost)+1 #estimated number of signatures
+#' str(res$Signatures)
+#' str(res$Exposures)
+#' #### Not Run
+#' ## Find estimated number of signatures for the given example using the Negative
+#' ## Binomial distribution. Evaluate no. of signatures between 2 and 7:
+#' # res_cv <- list()
+#' # CVcost <- rep(0,6)
+#' # for (i in 2:7){
+#' #  res_cv[[i]] <- sigmos(BRCA21,k=i,method="NB")
+#' #  CVcost[i-1] = res_cv[[i]]$cost_k
+#' # }
+#' # which.min(CVcost)+1 #estimated number of signatures
 #' }
 #'
 #' @export
