@@ -32,6 +32,7 @@
 #' res <- sigmos(BRCA21,k=3,method="Poisson")
 #' # Find estimated number of signatures for the given example using the Poisson distribution.
 #' # Evaluate no. of signatures between 2 and 7:
+#' \dontrun{
 #' res_cv <- list()
 #' CVcost <- rep(0,6)
 #' for (i in 2:7){
@@ -39,6 +40,7 @@
 #'   CVcost[i-1] = res_cv[[i]]$cost_k
 #' }
 #' which.min(CVcost)+1 #estimated number of signatures
+#' }
 #'
 #' @export
 sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5){
