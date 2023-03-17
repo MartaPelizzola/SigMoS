@@ -11,10 +11,10 @@
 #' @param k Number of signatures to be used in the cross-validation.
 #' @param n_iterations Number of iterations for cross-validation procedure. Default is 100.
 #' @param method Non-negative matrix factorization model: 'Poisson' or 'NB' can be used. Default is 'NB' corresponding to the Negative Binomial model.
-#' @param cost_f Cost function to be used for the cross-validation error. Default is GKL (Generalized Kullback-Leibler). Alternatives are: Frobenius norm ("Frobenius") and Itakura-Saito divergence ("IS").
+#' @param cost_f Cost function to be used for the cross-validation error. Default is GKL (Generalized Kullback-Leibler). Alternatives are: Frobenius norm ("Frobenius"), Itakura-Saito divergence ("IS"), Beta divergence ("Beta").
 #' @param size_train Size of the train set. Default is 0.9, i.e. 90% of the patients are used for training and 10% for testing in the cross-validation.
 #' @param patient_specific Logical. If TRUE patient-specific overdispersion is used in the Negative Binomial model.
-#' @param tol Threshold for convergence of the EM and MM algorithms for estimating mutational signatures. Default is 1e-3.
+#' @param beta Coefficient for Beta divergence if Beta divergence is used as cost function. Default is 2.
 #'
 #'
 #' @return List of length two including the costs.
