@@ -46,7 +46,7 @@
 #' # which.min(CVcost)+1 #estimated number of signatures
 #'
 #' @export
-sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5){
+sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5, beta = 2){
   if (k!=round(k)){
     stop("The number of signatures must be an integer.")
   }
@@ -99,6 +99,14 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
         tmp_costIS <- b_div
         tmp_costIS[zeros] <- (a_div/b_div - log(a_div/b_div))[zeros]
         tmp_cost <- sum(tmp_costIS)
+      } else if (cost_f=="Beta"){
+        a_div = as.vector(data[-train_set,])
+        b_div = as.vector(res_nb$E[-train_set,ord] %*% h_train)
+
+        zeros <- which(a_div>0)
+        tmp_costBETA <- b_div
+        tmp_costBETA[zeros] <- (1/(beta*(beta+1)))*(a_div^(beta+1)-b_div^(beta+1) - (beta+1)*(b_div^beta)*(a_div-b_div))[zeros]
+        tmp_cost <- sum(tmp_costBETA)
       } else {
         warning(paste0("The tmp_cost function ", cost_f, "is not implemented. Generalized Kullback-Leibler will be used."))
         tmp_cost <- gklDiv(as.vector(data[-train_set,]), as.vector(res_nb$E[-train_set,ord] %*% h_train))
@@ -141,6 +149,14 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
         tmp_costIS <- b_div
         tmp_costIS[zeros] <- (a_div/b_div - log(a_div/b_div))[zeros]
         tmp_cost <- sum(tmp_costIS)
+      } else if (cost_f=="Beta"){
+        a_div = as.vector(data[-train_set,])
+        b_div = as.vector(res_nb$E[-train_set,ord] %*% h_train)
+
+        zeros <- which(a_div>0)
+        tmp_costBETA <- b_div
+        tmp_costBETA[zeros] <- (1/(beta*(beta+1)))*(a_div^(beta+1)-b_div^(beta+1) - (beta+1)*(b_div^beta)*(a_div-b_div))[zeros]
+        tmp_cost <- sum(tmp_costBETA)
       } else {
         warning(paste0("The tmp_cost function ", cost_f, "is not implemented. Generalized Kullback-Leibler will be used."))
         tmp_cost <- gklDiv(as.vector(data[-train_set,]), as.vector(res_nb$E[-train_set,ord] %*% h_train))
