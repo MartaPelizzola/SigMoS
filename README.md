@@ -51,7 +51,7 @@ See our vignettes for more details by typing:
 ```{r vignette, warning = FALSE}
 browseVignettes("SigMoS") 
 ```
-A working example of the different functions offered in our package can be found at: 
+A working example of the different functions offered in our package can be found at: 10.6084/m9.figshare.22496860 in the notebook SigMoS_Example
 
 For more information about SigMoS see our manuscript on bioRxiv "Model selection and robust inference of mutational signatures using Negative Binomial non-negative matrix factorization" by Pelizzola et al.  
 
