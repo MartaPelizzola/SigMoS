@@ -19,7 +19,7 @@ Use the following commands to install the SigMoS package from GitHub:
 
 ```{r setup}
 library(devtools)
-#install_github("MartaPelizzola/SigMoS")
+install_github("MartaPelizzola/SigMoS")
 library(ggplot2)
 library(SigMoS)
 ```
