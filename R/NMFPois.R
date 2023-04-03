@@ -1,5 +1,6 @@
 #' @import SQUAREM
-
+#' @importFrom stats runif
+#'
 #' @title Poisson non-negative matrix factorization
 #'
 #' @description EM algorithm for poisson non-negative matrix factorization

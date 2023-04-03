@@ -18,3 +18,11 @@ Also returns the full correlation matrix between the signatures.
 \description{
 Correlation of mutational signatures
 }
+\examples{
+# Find cosine similarity between signatures estimated using SigMoS
+# with the Negative Binomial distribution and the Poisson distribution:
+res_nb <- sigmos(BRCA21,k=3,patient_specific = TRUE)
+res_pois <- sigmos(BRCA21,k=3,method="Poisson")
+corSig(res_pois$Signatures, res_nb$Signatures)
+
+}

@@ -3,6 +3,7 @@ title: "An introduction to SigMoS package"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{SigMoS-vignette}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEngine{rmarkdown::render}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,9 +15,11 @@ knitr::opts_chunk$set(
 )
 ```
 
+Use the following commands to install the SigMoS package from GitHub:
+
 ```{r setup}
 library(devtools)
-install_github("MartaPelizzola/SigMoS")
+#install_github("MartaPelizzola/SigMoS")
 library(ggplot2)
 library(SigMoS)
 ```
@@ -28,6 +31,7 @@ We show below the different options available in this R package.
 ## 1. SigMoS with Poisson-NMF
 When choosing the Poisson distributional assumption we can apply the model selection function with the Poisson model as follows:
 ```{r poisson}
+set.seed(1234567)
 k_vec <- 2:8
 nsig_pois <- list()
 cost <- c()
@@ -36,6 +40,8 @@ for (i in k_vec){
   cost = c(cost, nsig_pois[[i-1]]$cost_k)
 }
 k_poisson = k_vec[which.min(cost)]
+cost # cost for the different values of the number of signatures
+k_poisson # best number of signatures for this dataset under the Poisson model
 ```
 
 =======
@@ -45,14 +51,18 @@ Following the same procedure as for the Poisson case, we can also choose the Neg
 
 
 ```{r NBpatientspecific, warning = FALSE}
+set.seed(123456)
 k_vec <- 2:8
 nsig_nb_ps <- list()
 cost <- c()
 for (i in k_vec){
-  nsig_nb_ps[[i-1]] = sigmos(data = BRCA21, k = i, method = "NB", patient_specific = TRUE)
+  nsig_nb_ps[[i-1]] = sigmos(data = BRCA21, k = i, method = "NB", 
+                             patient_specific = TRUE)
   cost <- c(cost, nsig_nb_ps[[i-1]]$cost_k)
 }
 k_NB_ps <- k_vec[which.min(cost)]
+cost # cost for the different values of the number of signatures
+k_NB_ps # best number of signatures for this dataset under the Poisson model
 ```
 
 ## 3. Residual analysis as in Pelizzola et al. 2022
@@ -60,16 +70,17 @@ k_NB_ps <- k_vec[which.min(cost)]
 Given these results we can check the residuals and obtain the following residual plot:
 
 ```{r poissonRSD, warning = FALSE}
-res_pois = NMFPois(M = BRCA21, N = k_poisson)
-W_p <- res_pois$E
-H_p <- res_pois$P
-rsd_p = (BRCA21 - H_p%*%W_p)
-rsd_norm = rsd_p/(sqrt(H_p%*%W_p))
+res_pois = sigmos(data = BRCA21, k = 3, method = "Poisson")
+W_p <- res_pois$Exposures
+H_p <- res_pois$Signatures
+rsd_p = (BRCA21 - W_p%*%H_p)
+rsd_norm = rsd_p/(sqrt(W_p%*%H_p))
 
 funupper = function(x) 2*sqrt(x)
 funlower = function(x) -2*sqrt(x)
 
-dataPois = data.frame(obs = as.vector(H_p%*%W_p),Residuals = as.vector(rsd_p), residual_norm = as.vector(rsd_norm))
+dataPois = data.frame(obs = as.vector(W_p%*%H_p),Residuals = as.vector(rsd_p), 
+                      residual_norm = as.vector(rsd_norm))
 
 ggplot(dataPois, aes(x = obs, y = Residuals))+
   geom_point()+
@@ -93,13 +104,13 @@ The plot shows overdispersion under the Poisson model, thus we proceed consideri
 ## 3b. Residual analysis under the Negative Binomial distributional assumption
 
 ```{r NBresiduals, warning = FALSE}
-alpha_ps <- alphaNR(BRCA21,k_NB_ps, patient_specific = TRUE)
-res_nb_ps = NMFNB(M = BRCA21, N = k_NB_ps, alpha = alpha_ps)
+alpha_ps <- alphaNR(data = BRCA21, k = 3, patient_specific = TRUE)
+res_nb_ps = sigmos(data = BRCA21, k = 3, method = "NB", patient_specific = TRUE)
 
-W_nb_ps <- res_nb_ps$E
-H_nb_ps <- res_nb_ps$P
-rsd_nb_ps = (BRCA21 - H_nb_ps%*%W_nb_ps)
-rsd_norm = rsd_nb_ps/(sqrt(H_nb_ps%*%W_nb_ps))
+W_nb_ps <- res_nb_ps$Exposures
+H_nb_ps <- res_nb_ps$Signatures
+rsd_nb_ps = (BRCA21 - W_nb_ps%*%H_nb_ps)
+rsd_norm = rsd_nb_ps/(sqrt(W_nb_ps%*%H_nb_ps))
 
 funuppermin = function(x) 2*sqrt(x*(1+x/min(alpha_ps)))
 funlowermin = function(x) -2*sqrt(x*(1+x/min(alpha_ps)))
@@ -108,9 +119,11 @@ funlowermax = function(x) -2*sqrt(x*(1+x/max(alpha_ps)))
 funuppermedian = function(x) 2*sqrt(x*(1+x/median(alpha_ps)))
 funlowermedian = function(x) -2*sqrt(x*(1+x/median(alpha_ps)))
 
-dataNB = data.frame(obs = as.vector(H_nb_ps%*%W_nb_ps),Residuals = as.vector(rsd_nb_ps), residual_norm = as.vector(rsd_norm))
+dataNB = data.frame(obs = as.vector(W_nb_ps%*%H_nb_ps),
+                    Residuals = as.vector(rsd_nb_ps), 
+                    residual_norm = as.vector(rsd_norm))
 
-ggplot(dataPois, aes(x = obs, y = Residuals))+
+ggplot(dataNB, aes(x = obs, y = Residuals))+
   geom_point()+
   scale_x_log10()+
   stat_function(fun = funuppermin, color = "#009E73", size = 1, alpha = 0.5) + 
@@ -131,3 +144,23 @@ ggplot(dataPois, aes(x = obs, y = Residuals))+
 ```
 
 The plot shows that the Negative Binomial model provides a much better fit to the data. 
+
+## 4. Comparison of the mutational signatures 
+
+We provide a function to compare the estimated mutational signatures based on the cosine similarity:
+
+```{r corsig, warning = FALSE}
+?corSig
+corSig(res_nb_ps$Signatures, res_pois$Signatures)
+```
+
+This function provides the full distance matrix between the signatures based on the cosine similarity and a vector of indexes to reorder the second matrix to match the first one. 
+
+A comparison between the estimated signatures can also be of interest when trying to find signatures from the COSMIC database. The signatures from the COSMIC can be downloaded from:
+
+```{r cosmic, warning = FALSE}
+library(mutSignatures)
+cosmic <- getCosmicSignatures(forceUseMirror = FALSE, asMutSign = TRUE)
+```
+
+We refer to this package (function msigPlot) or other packages such as SigProfilerExtractor (Islam et al. 2022) and sigfit (Gori et al. 2018) to plot the mutational signatures. 

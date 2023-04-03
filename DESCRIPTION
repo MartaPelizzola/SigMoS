@@ -4,15 +4,15 @@ Title: Procedure to analyse mutational counts data from cancer patients: model s
 Version: 0.1.0
 Author: Ragnhild Laursen, Marta Pelizzola
 Maintainer: Ragnhild Laursen <ragnhild@math.au.dk>, Marta Pelizzola <marta.pelizzola@gmail.com>
-Description: Cross-validation and model selection for robust learning of mutational signatures using negative binomial non-negative matrix factorization
+Description: Cross-validation and model selection for robust learning of mutational signatures using negative binomial non-negative matrix factorization.
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-Imports: SQUAREM, foreach, doParallel
+Imports: SQUAREM, foreach, doParallel, vcfR, BiocManager, mutSignatures, stats
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 Suggests: 
     rmarkdown,
     knitr

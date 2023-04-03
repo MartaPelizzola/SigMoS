@@ -1,4 +1,7 @@
-#' @title Estimation of the overdispersion parameter for Negative Binomial non-negative matrix factorization
+#' @importFrom stats var
+#' @importFrom stats runif
+#'
+#' @title Estimation of the overdispersion parameter for Negative Binomial non-negative matrix factorization.
 #'
 #' @description Likehood estimation of the dispersion parameter in negative binomial using Newton-Raphson.
 #' The overdispersion parameter can be either vector of length one or vector of length no. of patients if patient-specific overdispersion is used.
@@ -10,6 +13,10 @@
 #'
 #'
 #' @return Overdispersion parameter. Either vector of length one or vector of length no. of patients if patient-specific overdispersion is used.
+#'
+#' @examples
+#' # Estimate patient specific overdispersion parameters:
+#' alpha <- alphaNR(BRCA21,k=3, patient_specific = TRUE)
 #'
 #' @export
 #'

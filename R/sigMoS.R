@@ -1,8 +1,12 @@
 #' @import foreach
 #' @import doParallel
 #' @import parallel
+#' @import BiocManager
+#' @import mutSignatures
+#' @import vcfR
+#' @importFrom stats median
 #'
-#' @title Model selection algorithm for the number of mutational signatures
+#' @title Model selection algorithm for the number of mutational signatures.
 #'
 #' @description Model selection algorithm for a given number of signatures k using either Poisson or Negative Binomial model.
 #'
@@ -11,11 +15,10 @@
 #' @param k Number of signatures to be used in the cross-validation.
 #' @param n_iterations Number of iterations for cross-validation procedure. Default is 100.
 #' @param method Non-negative matrix factorization model: 'Poisson' or 'NB' can be used. Default is 'NB' corresponding to the Negative Binomial model.
-#' @param cost_f Cost function to be used for the cross-validation error. Default is GKL (Generalized Kullback-Leibler). Alternatives are: Frobenius norm ("Frobenius"), Itakura-Saito divergence ("IS"), Beta divergence ("Beta").
+#' @param cost_f Cost function to be used for the cross-validation error. Default is GKL (Generalized Kullback-Leibler). Alternatives are: Frobenius norm ("Frobenius"), Itakura-Saito divergence ("IS").
 #' @param size_train Size of the train set. Default is 0.9, i.e. 90% of the patients are used for training and 10% for testing in the cross-validation.
 #' @param patient_specific Logical. If TRUE patient-specific overdispersion is used in the Negative Binomial model.
-#' @param beta Coefficient for Beta divergence if Beta divergence is used as cost function. Default is 2.
-#'
+#' @param tol Tolerance for convergence of NMF algorithm. Default is tol = 1e-5.
 #'
 #' @return List of length two including the costs.
 #'  - **cost** is a vector of length n_iterations where the cost for each iteration is stored.
@@ -46,7 +49,7 @@
 #' # which.min(CVcost)+1 #estimated number of signatures
 #'
 #' @export
-sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5, beta = 2){
+sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size_train=0.9,patient_specific=FALSE,tol = 1e-5){
   if (k!=round(k)){
     stop("The number of signatures must be an integer.")
   }
@@ -99,14 +102,6 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
         tmp_costIS <- b_div
         tmp_costIS[zeros] <- (a_div/b_div - log(a_div/b_div))[zeros]
         tmp_cost <- sum(tmp_costIS)
-      } else if (cost_f=="Beta"){
-        a_div = as.vector(data[-train_set,])
-        b_div = as.vector(res_nb$E[-train_set,ord] %*% h_train)
-
-        zeros <- which(a_div>0)
-        tmp_costBETA <- b_div
-        tmp_costBETA[zeros] <- (1/(beta*(beta+1)))*(a_div^(beta+1)-b_div^(beta+1) - (beta+1)*(b_div^beta)*(a_div-b_div))[zeros]
-        tmp_cost <- sum(tmp_costBETA)
       } else {
         warning(paste0("The tmp_cost function ", cost_f, "is not implemented. Generalized Kullback-Leibler will be used."))
         tmp_cost <- gklDiv(as.vector(data[-train_set,]), as.vector(res_nb$E[-train_set,ord] %*% h_train))
@@ -149,14 +144,6 @@ sigmos <- function(data,k=NULL,n_iterations=100,method = "NB", cost_f="GKL",size
         tmp_costIS <- b_div
         tmp_costIS[zeros] <- (a_div/b_div - log(a_div/b_div))[zeros]
         tmp_cost <- sum(tmp_costIS)
-      } else if (cost_f=="Beta"){
-        a_div = as.vector(data[-train_set,])
-        b_div = as.vector(res_nb$E[-train_set,ord] %*% h_train)
-
-        zeros <- which(a_div>0)
-        tmp_costBETA <- b_div
-        tmp_costBETA[zeros] <- (1/(beta*(beta+1)))*(a_div^(beta+1)-b_div^(beta+1) - (beta+1)*(b_div^beta)*(a_div-b_div))[zeros]
-        tmp_cost <- sum(tmp_costBETA)
       } else {
         warning(paste0("The tmp_cost function ", cost_f, "is not implemented. Generalized Kullback-Leibler will be used."))
         tmp_cost <- gklDiv(as.vector(data[-train_set,]), as.vector(res_nb$E[-train_set,ord] %*% h_train))

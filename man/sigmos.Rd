@@ -2,7 +2,7 @@
 % Please edit documentation in R/sigMoS.R
 \name{sigmos}
 \alias{sigmos}
-\title{Model selection algorithm for the number of mutational signatures}
+\title{Model selection algorithm for the number of mutational signatures.}
 \usage{
 sigmos(
   data,
@@ -12,8 +12,7 @@ sigmos(
   cost_f = "GKL",
   size_train = 0.9,
   patient_specific = FALSE,
-  tol = 1e-05,
-  beta = 2
+  tol = 1e-05
 )
 }
 \arguments{
@@ -25,13 +24,13 @@ sigmos(
 
 \item{method}{Non-negative matrix factorization model: 'Poisson' or 'NB' can be used. Default is 'NB' corresponding to the Negative Binomial model.}
 
-\item{cost_f}{Cost function to be used for the cross-validation error. Default is GKL (Generalized Kullback-Leibler). Alternatives are: Frobenius norm ("Frobenius"), Itakura-Saito divergence ("IS"), Beta divergence ("Beta").}
+\item{cost_f}{Cost function to be used for the cross-validation error. Default is GKL (Generalized Kullback-Leibler). Alternatives are: Frobenius norm ("Frobenius"), Itakura-Saito divergence ("IS").}
 
 \item{size_train}{Size of the train set. Default is 0.9, i.e. 90\% of the patients are used for training and 10\% for testing in the cross-validation.}
 
 \item{patient_specific}{Logical. If TRUE patient-specific overdispersion is used in the Negative Binomial model.}
 
-\item{beta}{Coefficient for Beta divergence if Beta divergence is used as cost function. Default is 2.}
+\item{tol}{Tolerance for convergence of NMF algorithm. Default is tol = 1e-5.}
 }
 \value{
 List of length two including the costs.

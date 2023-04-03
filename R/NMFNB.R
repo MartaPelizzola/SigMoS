@@ -1,6 +1,7 @@
 #' @import SQUAREM
-
-
+#' @importFrom stats runif
+#' @importFrom stats dnbinom
+#'
 #' @title Negative Binomial non-negative matrix factorization
 #'
 #' @description MM algorithm for negative binomial non-negative matrix factorization
