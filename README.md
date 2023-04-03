@@ -5,8 +5,6 @@ The R package SigMoS provides functions to extract signatures and exposures from
 We provide functions to extract signatures and exposures based on the Negative Binomial and Poisson distribution and a function to perform model selection to estimate the number of signatures to be reconstructed. 
 The package also contains a function to compare signatures based on their cosine similarity and a function to estimate the patient specific dispersion parameters for the Negative Binomial model.
 
-For more information about SigMoS see our manuscript on bioRxiv "Model selection and robust inference of mutational signatures using Negative Binomial non-negative matrix factorization" by Pelizzola et al.  
-
 
 A typical mutational count data set we considered for the SigMoS package is an R matrix with 96 rows (equal to the number of mutation types with 6 base mutations, when assuming strand symmetry and the 4 flanking nucleotides on each side) and as many columns as many patients are included in the data set. 
 
@@ -54,6 +52,8 @@ See our vignettes for more details by typing:
 browseVignettes("SigMoS") 
 ```
 A working example of the different functions offered in our package can be found at: 
+
+For more information about SigMoS see our manuscript on bioRxiv "Model selection and robust inference of mutational signatures using Negative Binomial non-negative matrix factorization" by Pelizzola et al.  
 
 # Authors
 Ragnhild Laursen (ragnhild@math.au.dk)
