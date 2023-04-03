@@ -1,6 +1,12 @@
 # SigMoS package 
 
-The R package SigMoS provides functions to extract signatures and exposures from mutational count data from cancer patients. 
+The R package SigMoS provides functions to extract signatures and exposures from mutational count data from cancer patients. Use the following commands to install the SigMoS package from GitHub and to load it in R:
+
+```{r readdata}
+library(devtools)
+install_github("MartaPelizzola/SigMoS",force = TRUE, build_vignettes = TRUE)
+library(SigMoS)
+```
 
 We provide functions to extract signatures and exposures based on the Negative Binomial and Poisson distribution and a function to perform model selection to estimate the number of signatures to be reconstructed. 
 The package also contains a function to compare signatures based on their cosine similarity and a function to estimate the patient specific dispersion parameters for the Negative Binomial model.
