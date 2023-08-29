@@ -47,10 +47,12 @@ NMFPois = function(M,N=NULL, tol = 1e-5, seed = sample(1:1000,1)){
     E = matrix(x[-c(1:(K*N))], nrow = N, ncol = G)
 
     PE <- P%*%E
+    PE[PE <= 0] = 1e-50
     P <- P * ((M/PE) %*% t(E))      # update of signatures
     P <- P %*% diag(1/colSums(P))   # make sure the columns sum to one
 
     PE <- P%*%E
+    PE[PE <= 0] = 1e-50
     E <- E * (t(P) %*% (M/PE))      # update of exposures
 
     par = c(as.vector(P),as.vector(E))
